@@ -1,0 +1,7 @@
+# This .env file will be generarted by create-env.sh
+.env
+
+.gitconfig
+.directory
+init.sh
+*-swp

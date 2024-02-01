@@ -1,0 +1,83 @@
+version: '3'
+
+services:
+  tuxbox-build:
+    image: tuxbox-build
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - BUILDENV_GIT_URL=${BUILDENV_GIT_URL}
+        - BUILDENV_PREFIX=${BUILDENV_PREFIX}
+        - BUILDENV_VERSION=${BUILDENV_VERSION}
+        - DISPLAY=${DISPLAY}
+        - ENABLE_UI_TOOLS=false
+        - GIT_EMAIL=${GIT_EMAIL}
+        - GIT_USER=${GIT_USER}
+        - HISTFILE=${USER_VOLUME_DATADIR}/${HISTFILE_NAME}
+        - HISTFILE_NAME=${HISTFILE_NAME}
+        - HOST_PREFIX=${HOST_PREFIX}
+        - LOCALE_LANG=${LOCALE_LANG}
+        - LOCAL_HOSTNAME=${LOCAL_HOSTNAME}
+        - NVIDIA_VISIBLE_DEVICES=${NVIDIA_VISIBLE_DEVICES}
+        - PATH=${PATH}
+        - QT_QUICK_BACKEND=${QT_QUICK_BACKEND}
+        - QT_XCB_GL_INTEGRATION=${QT_XCB_GL_INTEGRATION}
+        - START_PATH=${START_PATH}
+        - TB_BUILD_TIME=${TB_BUILD_TIME}
+        - TB_VERSION=${TB_VERSION}
+        - TERM=${TERM}
+        - TZ=${TZ}
+        - USER=${USER}
+        - USER_DIR=${USER_DIR}
+        - USER_GROUP=${USER_GROUP}
+        - USER_GROUP_ID=${USER_GROUP_ID}
+        - USER_ID=${USER_ID}
+        - USER_PASSWORD=${USER_PASSWORD}
+        - USER_VOLUME_WORKDIR=${USER_DIR}/${HOST_PREFIX}
+        - USER_VOLUME_DATADIR=${USER_VOLUME_DATADIR}
+        - XDG_CONFIG_HOME=${XDG_CONFIG_HOME}
+        - XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR}
+    container_name: tuxbox-build
+    env_file:
+      - .env
+    #environment:
+        #- BUILDENV_VERSION=3.2.4
+    devices:
+      - /dev/dri:/dev/dri
+    ports:
+      # the host: container ports for web access, used for httpd inside container to get built packages and images via browser, wget, curl, set top boxes etc.
+      - "8080:80"
+      # the host: container ports for ssh access of users in its /home
+      - "222:22"
+    tty: true
+    working_dir: /
+    volumes:
+      - ${USER_VOLUME_WORKDIR}:${USER_VOLUME_WORKDIR}
+      - ${USER_DIR}/sstate-cache:${USER_DIR}/sstate-cache
+      - ${USER_DIR}/Archive:${USER_DIR}/Archive
+      - ${USER_DIR}/.ccache:${USER_DIR}/.ccache
+      - ${USER_DIR}/bin:${USER_DIR}/bin
+      - ${USER_VOLUME_WORKDIR}/bin:${USER_VOLUME_WORKDIR}/bin
+      - ${USER_DIR}/.ssh:${USER_DIR}/.ssh
+      - ${USER_VOLUME_WORKDIR}/.config:/config
+      - ${USER_VOLUME_WORKDIR}/.config/git/config:${XDG_CONFIG_HOME}/git
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - /usr/lib/x86_64-linux-gnu/mesa:/usr/lib/x86_64-linux-gnu/mesa
+    networks:
+      - tuxbox-network
+    #hostname: ${LOCAL_HOSTNAME}
+    cap_add:
+      - SYS_ADMIN
+    restart: unless-stopped
+
+networks:
+  tuxbox-network:
+    driver: bridge
+
+volumes:
+  tuxbox-volumes:
+    driver: local
+
+
+

@@ -1,0 +1,243 @@
+
+Dieses Repository enthält die notwendigen Dateien, um einen Docker-Container zu konfigurieren, zu erzeugen und zu starten, einschließlich `docker-compose.yaml`, `Dockerfile` und Skripte. Einige Umgebungsvariablen werden in eine `.env`-Datei hinterlegt, die mit einem Script `create-env.sh` erzeugt werden müssen, weil einige Einstellungen vom Host-System benötigt werden.
+Die Verwendung dieses Dockerimages soll helfen, Docker-Container zu erzeugen, die die notwendigen Voraussetzungen bereitstellen, um Flashimages und Pakete mit dem Yocto/OE Buildsystem bauen zu können.
+
+- [1. Voraussetzungen](#1-voraussetzungen)
+- [2. Vorbereiten](#2-vorbereiten)
+  - [2.1. Repository klonen und in das geklonte Repo wechseln](#21-repository-klonen-und-in-das-geklonte-repo-wechseln)
+  - [2.2. Umgebungsvariablen konfigurieren](#22-umgebungsvariablen-konfigurieren)
+  - [2.3 Volumes](#23-volumes)
+  - [2.4 Ports konfigurieren](#24-ports-konfigurieren)
+    - [2.4.1 Webzugriff](#241-webzugriff)
+    - [2.4.2 SSH](#242-ssh)
+- [3. Container bauen](#3-container-bauen)
+  - [3.1 Beispiel 1](#31-beispiel-1)
+  - [3.2 Beispiel 2](#32-beispiel-2)
+- [4. Container starten](#4-container-starten)
+- [5. Container stoppen](#5-container-stoppen)
+- [6. Verwenden des Containers](#6-verwenden-des-containers)
+- [6.1. Einloggen](#61-einloggen)
+- [6.2. Buildumgebung nutzen](#62-buildumgebung-nutzen)
+- [7. Unterstützung](#7-unterstützung)
+
+## 1. Voraussetzungen
+
+  Getestet wurde unter Linux Debian 11.x, Ubuntu 20.04, 22.04. Es sollte aber auf jeder aktuellen Distribution funktionieren auf der Docker läuft.
+
+  Erforderlich:
+     
+   - Docker, [Installation](https://docs.docker.com/engine/install/debian/#install-using-the-convenience-script)
+   - Docker Compose >= v2.24.3, [Installation](https://docs.docker.com/compose/install/standalone/)
+   - Git, Installation über den Paketmanager je nach Distribution
+   
+  Optional:
+   
+   - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+   - Portainer, [Installation](https://docs.portainer.io/start/install-ce/server/docker/linux) (mit Docker-Desktop als Plugin verfügbar)
+
+  **Wichtig!** Nachdem Du Docker installiert hast und Docker als nicht Root Benutzer ausführen möchtest, was für unsere Zwecke durchaus angebracht ist, solltest Du dich mit diesem Befehl als Benutzer zur "docker" Gruppe hinzufügen:
+
+   ```bash
+   sudo usermod -aG docker $USER
+   ```
+  Danach zum Übernehmen der Einstellung entweder ausloggen und wieder einloggen oder einen Neustart durchführen!
+
+## 2. Vorbereiten
+
+### 2.1. Repository klonen und in das geklonte Repo wechseln
+
+   ```bash
+   git clone https://github.com/dbt1/docker-tuxbox-build.git && cd docker-tuxbox-build
+   ```
+
+### 2.2. Umgebungsvariablen konfigurieren
+
+   Führe dieses Script aus, um die notwendige `.env`-Datei zu erzeugen:
+
+   ```bash
+   ./create-env.sh
+   ```
+   
+  Das Script holt einige Umgebungsvariablen vom Host-System und passt, bzw. baut, diese in eine `.env`-Datei ein, damit der Container passend zu deinem Host-System konfiguriert wird. Sollten damit deine Anforderungen noch nicht abgedeckt sein, kannst Du diese erzeugte `.env`-Datei anpassen. Das Script solltest Du dann aber nicht noch einnmal ausführen, da die `.env`-Datei sonst wieder überschrieben wird. Es ist daher ratsam, etweder diese angepasste `.env`-Datei umzubenennen und entsprechend ebenfalls in der `docker-compose.yml`-Datei umbenennen, oder bevorzugt beim ausführen von `docker-compose` als Parameter eine andere in dieser Form `--env-file <meine .env-Datei>` an `docker-compose` übegeben.
+
+### 2.3 Volumes
+
+  Der Container verwendet Docker Volumes, um persistente Daten zu speichern, welche Zugriff auf spezifische Dateien und Verzeichnisse dauerhaft im Container ermöglichen.
+  In der Standardkonfiguration werden prinzipell diese Volumes passend zur Umgebung deines Host-Systems eingebunden und beim Starten des Containers eingehängt, so dass Du im Idealfall an der Volumes-Konfiguration nichts ändern musst.
+  Solltest Du daran Änderungen vornehmen wollen, findest Du in der `docker-compose.yml` die Konfiguration der Volumes. **Beachte** aber dass diese Einstellungem normalerweise mit den Pfaden wie sie für die Yocto/OE Buildumgebung mit dem init-Script aus dem Buildenv-Repository vorkonfiguriert werden, abgestimmt sind. Sollten daran Anpassungen vorgenommen werden, solltest Du das berücksichtigen!
+  
+  Diese Pfade werden als Volumes im Container bereitgestellt. Du hast über dein Host darauf normalen Zugriff:
+
+  ```bash
+  /home
+    └──<$USER>
+        ├── tuxbox
+        │   ├── .config
+        │   ├── .data
+        │   ├── bin
+        │   └── buildenv
+        ├── Archive
+        ├── bin
+        ├── sstate-cache
+  ```
+
+### 2.4 Ports konfigurieren
+
+  Der Container stellt einige Zugänge über bestimmte Netzwerkports zur Verfügung. Dies erlaubt den Zugang über einen Webbrowser auf die Buildergebnisse und den Zugang via ssh auf den Container.
+
+#### 2.4.1 Webzugriff
+
+  Standardmäßig ist der Container so konfiguriert, dass er auf Port 80 lauscht. Dein Host wird über Port 8080 auf den eingebauten Webserver (`lighttpd`) des Containers gemappt:
+
+  - Port: 8080 (Host) -> 80 (Container)
+
+  Dies ermöglicht den Zugriff via Webserver auf die erzeugten Images und Pakete (ipk's). Set-Top Boxen können damit direkt Updates beispielsweise aus deinem Heimnetz abrufen. Falls der Port 8080 des Hostsystems bei Dir bereits belegt ist, kannst Du diese Einstellungen entweder in der `docker-compose.yml` Datei anpassen oder beim Starten des Containers angeben. Dies könnte so aussehen, wenn man auf den Port 8081 mappt:
+
+  - 808**1**:80
+   
+  Einstellungen am Webserver können in der zuständigen lightttpd-Konfugarionsdatei vorgenommen werden, welche im entsprechenden Volume zur Verfügung steht:
+
+  ```bash
+   ~/tuxbox
+     └──.config
+        └── lighttpd
+            └── lighttpd.conf
+  ```
+  In der `lighttpd.conf` ist `dir-listing` aktiviert, so dass man ohne zusätzlichen Content auskommt.
+  
+  ```bash
+  ~/tuxbox/config/lighttpd$ cat lighttpd.conf
+  ...
+  #server.compat-module-load   = "disable"
+  server.modules += (
+        "mod_dirlisting",
+        "mod_staticfile",
+  )
+  dir-listing.activate = "enable"
+ ```
+ 
+#### 2.4.2 SSH
+
+  Üblicherweise greift man auf den Container direkt über `docker exec` zu.
+  Da Git ohnehin Bestandteil im Container ist, wird auch ein ssh-Server zur Verfügung gestellt. Der ssh-Server ist standardmäßig so konfiguriert:
+
+   - Port: 222 (Host) -> 22 (Container)
+   - Passwort: = Benutzername (wie in .env festgelegt)
+
+  Falls der Port 222 auf deinem Hostsystem bereits belegt wäre, kannst Du diese Einstellungen ebenso wie beim Webserver in der `docker-compose.yml` Datei anpassen oder beim Starten des Containers angeben.
+   
+  Einloggen vom Host-System selbst:
+    
+  ```bash
+  ssh $USER@localhost -p 222
+  ```
+  
+  Einloggen von anderem Rechner:
+    
+  ```bash
+  ssh <benutzer>@<IP oder Hostname des Rechners auf dem der Container läuft> -p 222
+  ```
+    
+## 3. Container bauen
+
+### 3.1 Beispiel 1
+ 
+  Docker-compose Wrapper ausführen:
+
+   **Hinweis:** Das vorangestellte `./` ist hier wichtig, da es sich um ein Wrapperscript handelt, welches sich im Repo befindet und das echte `docker-compose` aufruft, aber vorher automatisch eine `.env`-Datei wie in  [Schritt 2.2](#22-umgebungsvariablen-konfigurieren) beschrieben erzeugt! Dieses Wrapperscript nimmt alle Parameter an, die für `docker-compose` relevant sind. Das bedeutet, dass z.B. eine alternative `.env-Datei` verwendet werden kann. Dies soll lediglich den Aufwand für die Befehlseingabe verringern.
+
+   ```bash
+   ./docker-compose build
+   ```
+
+### 3.2 Beispiel 2
+
+  Docker-compose ausführen: mit anderer `.env-Datei`
+
+  **Hinweis:** im Repository ist eine `.env.sample` als Beispiel enthalten. Falls gewünscht, muss diese allerdings angepasst und explizit beim Erzeugen des Containers an `docker-compose` übergeben werden.
+
+  ```bash
+  docker-compose --env-file <Pfad zu anderer .env-Datei> build
+  ```
+
+## 4. Container starten
+
+   ```bash
+   docker-compose up -d
+   ```
+
+## 5. Container stoppen
+
+   ```bash
+   docker-compose down
+   ```
+
+## 6. Verwenden des Containers
+
+## 6.1. Einloggen
+
+   Man sollte den Namen oder die ID kennen, um sich einloggen zu können. Führe `docker ps` aus, um zu sehen, welche Container gerade verfügbar sind:
+
+   ```bash
+   docker ps
+   CONTAINER ID   IMAGE                       COMMAND                  CREATED          STATUS                PORTS                    NAMES
+   9d6e0d280a9e   tuxbox-build:latest         "/usr/local/bin/star…"   41 minutes ago   Up 41 minutes         0.0.0.0:8080->80/tcp     tuxbox-build
+   ```
+
+   Logge dich wie hier beispielsweise auf den Container mit der `Container-ID`  **9d6e0d280a9e** oder dem `Container Namen` ein:
+
+   ```bash
+   docker exec -it --user $USER 9d6e0d280a9e bash
+   ```
+   oder:
+
+   ```bash
+   docker exec -it --user $USER tuxbox-build bash
+   ```
+
+   Es sollte etwa dieses Prompt erscheinen:
+
+   ```bash
+   ~/tuxbox/buildenv$
+   ```
+
+  Zuerst solltest Du sicherstellen, dass das Init-Script aktuell ist. Führe deshalb eine Aktualisierung durch:
+
+  ```bash
+  ~/tuxbox/buildenv$ git pull -r origin master
+  ```
+
+  Ab jetzt kannst Du mit dem Container arbeiten.
+
+## 6.2. Buildumgebung nutzen
+
+  Nach dem Einloggen in den Container befindest Du dich bereits im Verzeichnis, in welchem sich das Init-Script befindet. Jetzt kannst du wie [hier](https://github.com/tuxbox-neutrino/buildenv/blob/master/README.md) beschrieben fortfahren.
+
+  Die vom Buildsystem erzeugten Images und Pakete werden über persistente Volumes innerhalb deines Home-Verzeichnisses des Hosts verfügbar gemacht. Standardmäßig ist dafür dieser Ort vorgesehen:
+
+  ```bash
+  /home
+   └──<$USER>
+       ├── tuxbox
+       :   ├── buildenv
+           :   ├── dist
+               :
+   ```
+  **Hinweis:** Solltest Du deine Volumes anders eingerichtet haben, kann dies natürlich abweichen.
+
+  Der Container stellt einen Webserver zur Verfügung und ist lokal und im LAN standardmäßig über den Port 8080 erreichbar:
+
+   - [http://localhost<:PORT-NUMMER>](http://localhost:8080)
+   - [http://127.0.0.1<:PORT-NUMMER>](http://127.0.0.1:8080)
+   
+   oder im LAN
+
+   - [http://IP<:PORT-NUMMER>](http://192.168.1.36:8080)
+
+
+## 7. Unterstützung
+
+  Für weitere Fragen oder Unterstützung öffne ein [Issue im GitHub](https://github.com/dbt1/docker-tuxbox-build/issues) oder melde Dich im [Forum](https://forum.tuxbox-neutrino.org/forum/viewforum.php?f=77).
+
+
+
