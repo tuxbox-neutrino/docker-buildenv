@@ -187,13 +187,14 @@ The use of this Docker image is intended to help create Docker containers that p
 
    For example, log in to the container with the `Container ID` **9d6e0d280a9e** or the `Container Name` like this:
 
+
    ```bash
-   docker exec -it --user $USER 9d6e0d280a9e bash
+   docker exec -it --user $USER tuxbox-build bash
    ```
    or:
 
    ```bash
-   docker exec -it --user $USER tuxbox-build bash
+   docker exec -it --user $USER 9d6e0d280a9e bash
    ```
 
    You should see something like this prompt:
