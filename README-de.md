@@ -18,7 +18,8 @@ Die Verwendung dieses Dockerimages soll helfen, Docker-Container zu erzeugen, di
 - [6. Verwenden des Containers](#6-verwenden-des-containers)
 - [6.1. Einloggen](#61-einloggen)
 - [6.2. Buildumgebung nutzen](#62-buildumgebung-nutzen)
-- [7. Unterstützung](#7-unterstützung)
+- [7. Container aktualisieren](#7-container-aktualisieren)
+- [8. Unterstützung](#8-unterstützung)
 
 ## 1. Voraussetzungen
 
@@ -176,7 +177,7 @@ Die Verwendung dieses Dockerimages soll helfen, Docker-Container zu erzeugen, di
 
 ## 6.1. Einloggen
 
-   Man sollte den Namen oder die ID kennen, um sich einloggen zu können. Führe `docker ps` aus, um zu sehen, welche Container gerade verfügbar sind:
+   Man sollte den Namen oder die Container-ID kennen, um sich einloggen zu können. Führe `docker ps` aus, um zu sehen, welche Container gerade verfügbar sind:
 
    ```bash
    docker ps
@@ -193,7 +194,7 @@ Die Verwendung dieses Dockerimages soll helfen, Docker-Container zu erzeugen, di
    oder:
 
    ```bash
-   docker exec -it --user $USER 9d6e0d280a9e bash
+   docker exec -it --user $USER <CONTAINER ID> bash
    ```
 
    Es sollte etwa dieses Prompt erscheinen:
@@ -236,7 +237,20 @@ Die Verwendung dieses Dockerimages soll helfen, Docker-Container zu erzeugen, di
    - [http://IP<:PORT-NUMMER>](http://192.168.1.36:8080)
 
 
-## 7. Unterstützung
+## 7. Container aktualisieren
+
+  Entsprechend wie unter [Schritt 2.1](#21-repository-klonen-und-in-das-geklonte-repo-wechseln) angegeben, kann das Repository, dass die Rezeptur für den Container enthält, regelmäßig aktualisiert werden.
+  Dafür wechselt man in das Repository und führt dieses Kommando aus:
+
+ ```bash
+  ~/docker-tuxbox-build$ git pull -r origin master
+ ```
+
+ Anschließend wie [hier](#3-container-bauen) beschrieben, den Container neu bauen lassen.
+
+ **HINWEIS!**: Von der Verwendung von Watchtower zusammen mit Portainer ist abzuraten, da es sich hierbei um einen Stack handelt, der auf dein System abgestimmt ist und das Dockerimage individuell erstellt wird und (noch) nicht über eine Container Registry wie z.B. Docker Hub verfügbar ist!
+
+## 8. Unterstützung
 
   Für weitere Fragen oder Unterstützung öffne ein [Issue im GitHub](https://github.com/dbt1/docker-tuxbox-build/issues) oder melde Dich im [Forum](https://forum.tuxbox-neutrino.org/forum/viewforum.php?f=77).
 
