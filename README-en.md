@@ -19,7 +19,8 @@ The use of this Docker image is intended to help create Docker containers that p
 - [6. Using the Container](#6-using-the-container)
 - [6.1. Login](#61-login)
 - [6.2. Use build environment](#62-build-environment-use)
-- [7. Support](#7-support)
+- [7. Update Container](#7-update-container)
+- [8th. Support](#8-support)
 
 ## 1. Requirements
 
@@ -177,7 +178,7 @@ The use of this Docker image is intended to help create Docker containers that p
 
 ## 6.1. log in
 
-   You should know the name or ID to log in. Run `docker ps` to see which containers are currently available:
+   You should know the name or container ID to log in. Run `docker ps` to see which containers are currently available:
 
    ```bash
    docker ps
@@ -194,7 +195,7 @@ The use of this Docker image is intended to help create Docker containers that p
    or:
 
    ```bash
-   docker exec -it --user $USER 9d6e0d280a9e bash
+   docker exec -it --user $USER <CONTAINER ID> bash
    ```
 
    You should see something like this prompt:
@@ -237,6 +238,19 @@ The use of this Docker image is intended to help create Docker containers that p
    - [http://IP<:PORT NUMBER>](http://192.168.1.36:8080)
 
 
-## 7. Support
+## 7. Update containers
+
+  As stated in [Step 2.1](#21-clone-repository-and-switch-to-the-cloned-repo), the repository that contains the recipe for the container can be updated regularly.
+  To do this, go to the repository and run this command:
+
+ ```bash
+  ~/docker-tuxbox-build$ git pull -r origin master
+ ```
+
+ Then have the container rebuilt as described [here](#3-container-building).
+
+ **NOTE!**: It is not recommended to use Watchtower together with Portainer, as this is a stack that is tailored to your system and the Docker image is created individually and does not (yet) have a container registry such as. Docker Hub is available!
+
+## 8. Support
 
   For further questions or support, open an [Issue in GitHub](https://github.com/dbt1/docker-tuxbox-build/issues) or report in the [Forum](https://forum.tuxbox-neutrino.org /forum/viewforum.php?f=77).
