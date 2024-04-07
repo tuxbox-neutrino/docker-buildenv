@@ -186,13 +186,14 @@ Die Verwendung dieses Dockerimages soll helfen, Docker-Container zu erzeugen, di
 
    Logge dich wie hier beispielsweise auf den Container mit der `Container-ID`  **9d6e0d280a9e** oder dem `Container Namen` ein:
 
+
    ```bash
-   docker exec -it --user $USER 9d6e0d280a9e bash
+   docker exec -it --user $USER tuxbox-build bash
    ```
    oder:
 
    ```bash
-   docker exec -it --user $USER tuxbox-build bash
+   docker exec -it --user $USER 9d6e0d280a9e bash
    ```
 
    Es sollte etwa dieses Prompt erscheinen:
