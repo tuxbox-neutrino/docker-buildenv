@@ -193,7 +193,8 @@ RUN echo "if [ ! -d ${START_PATH}/.git ]; then" >> ${CONTAINER_INIT_SCRIPT} && \
     echo "  rm -rf ${USER_DIR}/${BUILDENV_PREFIX}/tmp" >> ${CONTAINER_INIT_SCRIPT} && \
     echo "else" >> ${CONTAINER_INIT_SCRIPT} && \
     echo "  echo 'Repository [${START_PATH}] already exists. Not touched!'" >> ${CONTAINER_INIT_SCRIPT} && \
-    echo "fi" >> ${CONTAINER_INIT_SCRIPT}
+    echo "fi" >> ${CONTAINER_INIT_SCRIPT} && \
+    echo "chown -R ${USER}:${USER_GROUP} ${USER_VOLUME_WORKDIR}" >> ${CONTAINER_INIT_SCRIPT}
 
 ## prepare profile
 COPY .bashrc ${USER_DIR}/.bashrc
