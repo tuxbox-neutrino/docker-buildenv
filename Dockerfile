@@ -157,7 +157,6 @@ RUN groupadd -g "${USER_GROUP_ID}" "${USER_GROUP}" && \
 ENV LIGHTTPD_RUN="/etc/service/lighttpd/run"
 ENV LIGHTTPD_CONFIG_PATH="/config/lighttpd"
 ENV LIGHTTPD_STD_CONFIG_FILE="${LIGHTTPD_CONFIG_PATH}/lighttpd.conf"
-ENV LIGHTTPD_CONF_INC="${LIGHTTPD_CONFIG_PATH}/lighttpd.conf.inc"
 RUN mkdir -p /etc/service/lighttpd && \
     echo '#!/bin/sh' > ${LIGHTTPD_RUN} && \
     echo "if [ ! -d ${LIGHTTPD_CONFIG_PATH} ]; then" >> ${LIGHTTPD_RUN} && \
