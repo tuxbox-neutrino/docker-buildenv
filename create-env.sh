@@ -28,9 +28,12 @@ GIT_USER="$(grep "${USER}" /etc/passwd | cut -d: -f5 | sed 's/,//g')"
 if git --version &>/dev/null; then
     # Git is installed, try to get global values
     GLOBAL_EMAIL=$(git config --global user.email)
+    if [ -z "$GLOBAL_EMAIL" ]; then
+        GLOBAL_EMAIL=$GIT_EMAIL
+    fi
     GLOBAL_USER=$(git config --global user.name)
     if [ -z "$GLOBAL_USER" ]; then
-        GLOBAL_USER=$USER
+        GLOBAL_USER=$GIT_USER
     fi
     
     # Check if inside a Git repository
