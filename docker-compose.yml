@@ -60,6 +60,7 @@ services:
       - ${USER_DIR}/bin:${USER_DIR}/bin
       - ${USER_VOLUME_WORKDIR}/bin:${USER_VOLUME_WORKDIR}/bin
       - ${USER_DIR}/.ssh:${USER_DIR}/.ssh
+      - ${USER_VOLUME_DATADIR}:/data
       - ${USER_VOLUME_WORKDIR}/.config:/config
       - ${USER_VOLUME_WORKDIR}/.config/git/config:${XDG_CONFIG_HOME}/git
       - /tmp/.X11-unix:/tmp/.X11-unix
