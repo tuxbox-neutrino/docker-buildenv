@@ -197,10 +197,11 @@ RUN echo "if [ ! -d ${START_PATH}/.git ]; then" >> ${CONTAINER_INIT_SCRIPT} && \
     echo "chown -R ${USER}:${USER_GROUP} ${USER_VOLUME_WORKDIR}" >> ${CONTAINER_INIT_SCRIPT}
 
 ## prepare profile
-COPY .bashrc ${USER_DIR}/.bashrc
-RUN echo "sed -i 's|@START_PATH@|'"${START_PATH}"'|' ${USER_DIR}/.bashrc" >> ${CONTAINER_INIT_SCRIPT} && \
-    echo "sed -i 's|@VERSION@|'"${TB_VERSION}"'|' ${USER_DIR}/.bashrc" >> ${CONTAINER_INIT_SCRIPT}  && \
-    echo "sed -i 's|@HISTFILE@|'"${HISTFILE}"'|' ${USER_DIR}/.bashrc" >> ${CONTAINER_INIT_SCRIPT}
+ENV BASH_RC_FILE=${USER_DIR}/.bashrc
+COPY .bashrc ${BASH_RC_FILE}
+RUN echo "sed -i 's|@START_PATH@|'"${START_PATH}"'|' ${BASH_RC_FILE}" >> ${CONTAINER_INIT_SCRIPT} && \
+    echo "sed -i 's|@VERSION@|'"${TB_VERSION}"'|' ${BASH_RC_FILE}" >> ${CONTAINER_INIT_SCRIPT}  && \
+    echo "sed -i 's|@HISTFILE@|'"${HISTFILE}"'|' ${BASH_RC_FILE}" >> ${CONTAINER_INIT_SCRIPT}
 
 ## prepare ssh config
 RUN echo "mkdir -p ${USER_DIR}/.ssh" >> ${CONTAINER_INIT_SCRIPT}
