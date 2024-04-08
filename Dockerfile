@@ -93,6 +93,11 @@ ARG TB_VERSION=${TB_VERSION}
 ARG XDG_CONFIG_HOME=${XDG_CONFIG_HOME}
 ARG XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR}
 
+## Add the user with default password
+RUN groupadd -g "${USER_GROUP_ID}" "${USER_GROUP}" && \
+    useradd -m -u "${USER_ID}" -g "${USER_GROUP_ID}" -s /bin/bash "${USER}" && \
+    echo "${USER}:${USER_PASSWORD}" | chpasswd
+
 ## Set the desired Locale
 RUN locale-gen ${LOCALE_LANG}  && \
     dpkg-reconfigure --frontend=noninteractive locales && \
@@ -147,11 +152,6 @@ RUN mkdir /var/run/sshd && \
 
 ### Set timzone
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-
-## Add the user with default password
-RUN groupadd -g "${USER_GROUP_ID}" "${USER_GROUP}" && \
-    useradd -m -u "${USER_ID}" -g "${USER_GROUP_ID}" -s /bin/bash "${USER}" && \
-    echo "${USER}:${USER_PASSWORD}" | chpasswd
 
 ## Lighttpd setup and create the runit service for lighttpd
 ENV LIGHTTPD_RUN="/etc/service/lighttpd/run"
