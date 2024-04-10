@@ -1,8 +1,13 @@
-version: '3'
+version: '3.8'
 
 services:
   tuxbox-build:
+    container_name: tuxbox-build
     image: tuxbox-build
+#    environment:
+#        - BUILDENV_VERSION=3.2.4
+    env_file:
+        - .env
     build:
       context: .
       dockerfile: Dockerfile
@@ -38,11 +43,8 @@ services:
         - USER_VOLUME_DATADIR=${USER_VOLUME_DATADIR}
         - XDG_CONFIG_HOME=${XDG_CONFIG_HOME}
         - XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR}
-    container_name: tuxbox-build
-    env_file:
-      - .env
-    #environment:
-        #- BUILDENV_VERSION=3.2.4
+
+
     devices:
       - /dev/dri:/dev/dri
     ports:
