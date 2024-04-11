@@ -2,6 +2,9 @@
 # FROM debian:bullseye-slim
 FROM dbt1/git-tools
 
+### Path only valid while build base image
+ENV PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
 ### Install the required tools and packages
 RUN apt-get update && apt-get install -y --no-install-recommends \
     bash \
@@ -77,7 +80,6 @@ ARG HOST_PREFIX=${HOST_PREFIX}
 ARG LOCALE_LANG=${LOCALE_LANG}
 ARG LOCAL_HOSTNAME=${LOCAL_HOSTNAME}
 ARG NVIDIA_VISIBLE_DEVICES=${NVIDIA_VISIBLE_DEVICES}
-ARG PATH=${PATH}
 ARG QT_QUICK_BACKEND=${QT_QUICK_BACKEND}
 ARG QT_XCB_GL_INTEGRATION=${QT_XCB_GL_INTEGRATION}
 ARG START_PATH=${START_PATH}
@@ -133,7 +135,6 @@ ENV NO_AT_BRIDGE=1
 ## Create some basic directories and permissions for X-Server
 RUN mkdir -p $XDG_RUNTIME_DIR && chown -R root:root $XDG_RUNTIME_DIR && chmod 0700 $XDG_RUNTIME_DIR
 
-### Terminal
 ## Copy welcome message
 ENV BANNER_FILE=/etc/welcome.txt
 COPY terminal-splash.txt /etc/terminal-splash.txt
@@ -172,14 +173,14 @@ RUN mkdir -p /etc/service/lighttpd && \
     echo "exec lighttpd -D -f ${LIGHTTPD_STD_CONFIG_FILE}" >> ${LIGHTTPD_RUN} && \
     chmod 755 ${LIGHTTPD_RUN}
 
-### generate content of start script ###
+### Start generate content of start script ###
 ENV CONTAINER_INIT_SCRIPT="/usr/local/bin/init.sh"
 RUN echo "#!/bin/bash" > ${CONTAINER_INIT_SCRIPT} && \
     echo "echo 'Initialize tuxbox-builder container...'" >> ${CONTAINER_INIT_SCRIPT} && \
-    echo "chown -R ${USER}:${USER_GROUP} ${USER_DIR} ${USER_VOLUME_DATADIR}" >> ${CONTAINER_INIT_SCRIPT}
+    echo "chown -R ${USER}:${USER_GROUP} ${USER_DIR} ${USER_VOLUME_DATADIR}" >> ${CONTAINER_INIT_SCRIPT}  && \
+    echo "usermod -aG sudo $USER" >> ${CONTAINER_INIT_SCRIPT}
 
 ## prepare git config
-#COPY .gitconfig ${USER_DIR}/.gitconfig
 RUN mkdir -p ${XDG_CONFIG_HOME}/git && \
     echo "echo -e '[user]\\n\\temail = ${GIT_EMAIL}\\n\\tname = ${GIT_USER}' > ${XDG_CONFIG_HOME}/git/config" >> ${CONTAINER_INIT_SCRIPT} && \
     echo "chown -R ${USER}:${USER_GROUP} ${XDG_CONFIG_HOME}/git" >> ${CONTAINER_INIT_SCRIPT} && \
