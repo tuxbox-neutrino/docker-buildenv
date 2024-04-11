@@ -144,12 +144,14 @@ RUN cat /etc/terminal-splash.txt > ${BANNER_FILE} &&  \
     echo "--------------------------------------------------------------" >> ${BANNER_FILE}
 
 ### ssh stuff
+ENV SSHD_RUN_SERVICE_DIR="/etc/service/sshd"
+ENV SSHD_RUN="${SSHD_RUN_SERVICE_DIR}/run"
 RUN mkdir /var/run/sshd && \
     ssh-keygen -A && \
-    mkdir -p /etc/service/sshd && \
-    echo '#!/bin/sh' > /etc/service/sshd/run && \
-    echo 'exec /usr/sbin/sshd -D' >> /etc/service/sshd/run && \
-    chmod 755 /etc/service/sshd/run
+    mkdir -p ${SSHD_RUN_SERVICE_DIR} && \
+    echo '#!/bin/sh' > ${SSHD_RUN} && \
+    echo 'exec /usr/sbin/sshd -D' >> ${SSHD_RUN} && \
+    chmod 755 ${SSHD_RUN}
 
 ### Set timzone
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
