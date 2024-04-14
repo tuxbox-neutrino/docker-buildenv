@@ -1,71 +1,8 @@
-## Use the official Debian 11 image as a base
-# FROM debian:bullseye-slim
-FROM dbt1/git-tools
-
-### Path only valid while build base image
-ENV PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-
-### Install the required tools and packages
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    bash \
-    bzip2 \
-    binutils \
-    build-essential \
-    chrpath \
-    clisp \
-    coreutils \
-    cpio \
-    cppcheck \
-    curl \
-    debianutils \
-    default-jre \
-    diffstat \
-    diffutils \
-    doxygen \
-    file \
-    gcc \
-    gcc-multilib \
-    git-core \
-    gnupg \
-    gawk \
-    iputils-ping \
-    libc-bin \
-    libc6 \
-    libcapstone4 \
-    libegl1-mesa \
-    libsdl1.2debian \
-    libsdl2-dev \
-    libxml2-utils \
-    lighttpd \
-    linux-libc-dev \
-    locales-all \
-    locales \
-    make \
-    nano \
-    net-tools \
-    ninja-build \
-    openssh-server \
-    passwd \
-    procps \
-    pylint3 \
-    python \
-    python3 \
-    python3-git \
-    python3-jinja2 \
-    python3-pexpect \
-    rsync \
-    runit \
-    sed \
-    socat \
-    subversion \
-    sudo \
-    texinfo \
-    tree \
-    unzip \
-    util-linux \
-    wget
+## Use the official Debian 11 image based up debian:bullseye-slim as a base
+FROM dbt1/debian-tuxbox-base:v1.0
 
 ### Args
+ARG PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 ARG BUILDENV_GIT_URL=${BUILDENV_GIT_URL}
 ARG BUILDENV_VERSION=${BUILDENV_VERSION}
 ARG BUILDENV_PREFIX=${BUILDENV_PREFIX}
