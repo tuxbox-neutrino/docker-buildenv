@@ -1,6 +1,6 @@
 
-Dieses Repository enthält die notwendigen Dateien, um einen Docker-Container zu konfigurieren, zu erzeugen und zu starten, einschließlich `docker-compose.yaml`, `Dockerfile` und Skripte. Einige Umgebungsvariablen werden in eine `.env`-Datei hinterlegt, die mit einem Script `create-env.sh` erzeugt werden müssen, weil einige Einstellungen vom Host-System benötigt werden.
-Die Verwendung dieses Dockerimages soll helfen, Docker-Container zu erzeugen, die die notwendigen Voraussetzungen bereitstellen, um Flashimages und Pakete mit dem Yocto/OE Buildsystem bauen zu können.
+Dieses Repository enthält die notwendigen Dateien, um einen Docker-Container zu konfigurieren, zu erzeugen und zu starten, einschließlich `docker-compose.yaml`, `Dockerfile` und Skripte. Einige Umgebungsvariablen werden in eine `.env`-Datei hinterlegt, die mit dem Script `create-env.sh` erzeugt werden müssen, damit einige Einstellungen vom Host-System übernommen werden können. Benötigt wird auch ein Basis Dockerimage, dass automatisch von Docker-Hub angefordert wird.
+Die Verwendung dieses Repositorys soll helfen, Docker-Container zu erzeugen, die die notwendigen Voraussetzungen bereitstellen, um Flashimages und Pakete mit dem Yocto/OE Buildsystem bauen zu können.
 
 - [1. Voraussetzungen](#1-voraussetzungen)
 - [2. Vorbereiten](#2-vorbereiten)
