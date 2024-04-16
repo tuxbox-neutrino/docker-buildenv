@@ -1,7 +1,7 @@
 Note: This is an automatically translated file. Original content from [here](https://github.com/dbt1/docker-tuxbox-build/blob/master/README-de.md):
 
-This repository contains the necessary files to configure, build, and launch a Docker container, including `docker-compose.yaml`, `Dockerfile`, and scripts. Some environment variables are stored in a `.env` file, which must be created with a `create-env.sh` script because some settings are required by the host system.
-The use of this Docker image is intended to help create Docker containers that provide the necessary requirements to be able to build Flash images and packages with the Yocto/OE build system.
+This repository contains the necessary files to configure, build, and launch a Docker container, including `docker-compose.yaml`, `Dockerfile`, and scripts. Some environment variables are stored in a `.env` file, which must be created with the `create-env.sh` script so that some settings can be adopted by the host system. You also need a base Docker image that is automatically requested from Docker Hub.
+The use of this repository is intended to help create Docker containers that provide the necessary requirements to be able to build flash images and packages with the Yocto/OE build system.
 
 - [1. Requirements](#1-requirements)
 - [2. Prepare](#2-prepare)
@@ -15,7 +15,7 @@ The use of this Docker image is intended to help create Docker containers that p
   - [3.1 Example 1](#31-example-1)
   - [3.2 Example 2](#32-example-2)
 - [4. Start container](#4-start-container)
-- [5. Stop container](#5-stop-container)
+- [5. stop container](#5-container-stop)
 - [6. Using the Container](#6-using-the-container)
 - [6.1. Login](#61-login)
 - [6.2. Use build environment](#62-build-environment-use)
@@ -214,7 +214,7 @@ The use of this Docker image is intended to help create Docker containers that p
 
 ## 6.2. Use build environment
 
-  After logging into the container, you are already in the directory where the init script is located. Now you can continue as described [here](https://github.com/tuxbox-neutrino/buildenv/blob/master/README.md).
+  After logging into the container, you are already in the directory in which the init script is located. Now you can continue as described [here](https://github.com/tuxbox-neutrino/buildenv/blob/master/README.md).
 
   The images and packages produced by the build system are made available via persistent volumes within your host home directory. By default, this location is intended for this:
 
@@ -249,7 +249,7 @@ The use of this Docker image is intended to help create Docker containers that p
 
  Then have the container rebuilt as described [here](#3-container-building).
 
- **NOTE!**: It is not recommended to use Watchtower together with Portainer, as this is a stack that is tailored to your system and the Docker image is created individually and does not (yet) have a container registry such as. Docker Hub is available!
+ **NOTE!**: It is not recommended to use Watchtower together with Portainer, as this is a stack that is tailored to your system and the Docker image is created individually and does not (yet) have a container registry such as Docker Hub is available!
 
 ## 8. Support
 
