@@ -48,7 +48,7 @@ Die Verwendung dieses Repositorys soll helfen, Docker-Container zu erzeugen, die
 ### 2.1. Repository klonen und in das geklonte Repo wechseln
 
    ```bash
-   git clone https://github.com/dbt1/docker-tuxbox-build.git && cd docker-tuxbox-build
+   git clone https://github.com/dbt1/docker-buildenv.git && cd docker-buildenv
    ```
 
 ### 2.2. Umgebungsvariablen konfigurieren
@@ -243,7 +243,7 @@ Die Verwendung dieses Repositorys soll helfen, Docker-Container zu erzeugen, die
   Dafür wechselt man in das Repository und führt dieses Kommando aus:
 
  ```bash
-  ~/docker-tuxbox-build$ git pull -r origin master
+  ~/docker-buildenv$ git pull -r origin master
  ```
 
  Anschließend wie [hier](#3-container-bauen) beschrieben, den Container neu bauen lassen.
@@ -252,7 +252,7 @@ Die Verwendung dieses Repositorys soll helfen, Docker-Container zu erzeugen, die
 
 ## 8. Unterstützung
 
-  Für weitere Fragen oder Unterstützung öffne ein [Issue im GitHub](https://github.com/dbt1/docker-tuxbox-build/issues) oder melde Dich im [Forum](https://forum.tuxbox-neutrino.org/forum/viewforum.php?f=77).
+  Für weitere Fragen oder Unterstützung öffne ein [Issue im GitHub](https://github.com/dbt1/docker-buildenv/issues) oder melde Dich im [Forum](https://forum.tuxbox-neutrino.org/forum/viewforum.php?f=77).
 
 
 
