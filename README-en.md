@@ -15,7 +15,7 @@ The use of this repository is intended to help create Docker containers that pro
   - [3.1 Example 1](#31-example-1)
   - [3.2 Example 2](#32-example-2)
 - [4. Start container](#4-start-container)
-- [5. stop container](#5-container-stop)
+- [5. Stop container](#5-stop-container)
 - [6. Using the Container](#6-using-the-container)
 - [6.1. Login](#61-login)
 - [6.2. Use build environment](#62-build-environment-use)
@@ -49,7 +49,7 @@ The use of this repository is intended to help create Docker containers that pro
 ### 2.1. Clone repository and switch to the cloned repo
 
    ```bash
-   git clone https://github.com/dbt1/docker-tuxbox-build.git && cd docker-tuxbox-build
+   git clone https://github.com/dbt1/docker-buildenv.git && cd docker-buildenv
    ```
 
 ### 2.2. Configure environment variables
@@ -244,7 +244,7 @@ The use of this repository is intended to help create Docker containers that pro
   To do this, go to the repository and run this command:
 
  ```bash
-  ~/docker-tuxbox-build$ git pull -r origin master
+  ~/docker-buildenv$ git pull -r origin master
  ```
 
  Then have the container rebuilt as described [here](#3-container-building).
@@ -253,4 +253,4 @@ The use of this repository is intended to help create Docker containers that pro
 
 ## 8. Support
 
-  For further questions or support, open an [Issue in GitHub](https://github.com/dbt1/docker-tuxbox-build/issues) or report in the [Forum](https://forum.tuxbox-neutrino.org /forum/viewforum.php?f=77).
+  For further questions or support, open an [Issue in GitHub](https://github.com/dbt1/docker-buildenv/issues) or report in the [Forum](https://forum.tuxbox-neutrino.org/forum /viewforum.php?f=77).
