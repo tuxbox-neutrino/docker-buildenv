@@ -58,6 +58,7 @@ services:
       - ${USER_DIR}/sstate-cache:${USER_DIR}/sstate-cache
       - ${USER_DIR}/Archive:${USER_DIR}/Archive
       - ${USER_DIR}/.ccache:${USER_DIR}/.ccache
+      - ${USER_DIR}/sources:${USER_DIR}/sources
       - ${USER_VOLUME_BINDIR}:${USER_DIR}/bin
       - ${USER_VOLUME_WORKBINDIR}:${USER_VOLUME_WORKDIR}/bin
       - ${USER_DIR}/.ssh:${USER_DIR}/.ssh
