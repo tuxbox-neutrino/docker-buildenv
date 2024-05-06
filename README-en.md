@@ -80,6 +80,7 @@ The use of this repository is intended to help create Docker containers that pro
         │ └── buildenv
         ├── Archives
         ├── am
+        ├── sources
         ├── sstate cache
   ```
 
