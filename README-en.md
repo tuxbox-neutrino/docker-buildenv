@@ -146,11 +146,11 @@ The use of this repository is intended to help create Docker containers that pro
  
   Run docker-compose wrapper:
 
-   **Note:** The preceding `./` is important here because it is a wrapper script that is in the repo and calls the real `docker-compose`, but beforehand it automatically creates a `.env` file like described in [Step 2.2](#22-configure-environment-variables)! This wrapper script takes all parameters relevant to `docker-compose`. This means that, for example, an alternative `.env file` can be used. This is simply intended to reduce the effort involved in entering commands.
-
    ```bash
    ./docker-compose build
    ```
+
+   **Note:** The preceding `./` must be noted here as the wrapper script is in the repo. The wrapper script calls `docker-compose` as intended, but after automatically creating an `.env` file as described in [Step 2.2](#22-configure-environment-variables)! This wrapper script takes all parameters common to `docker-compose`. It only serves to reduce the effort required to enter commands to create the environment variables, which are provided via the generated `.env` file.
 
 ### 3.2 Example 2
 
@@ -214,7 +214,7 @@ The use of this repository is intended to help create Docker containers that pro
 
 ## 6.2. Use build environment
 
-  After logging into the container, you are already in the directory in which the init script is located. Now you can continue as described [here](https://github.com/tuxbox-neutrino/buildenv/blob/master/README.md).
+  After logging into the container, you are already in the directory where the init script is located. Now you can continue as described [here](https://github.com/tuxbox-neutrino/buildenv/blob/master/README.md).
 
   The images and packages produced by the build system are made available via persistent volumes within your host home directory. By default, this location is intended for this:
 
@@ -247,10 +247,8 @@ The use of this repository is intended to help create Docker containers that pro
   ~/docker-buildenv$ git pull -r origin master
  ```
 
- Then have the container rebuilt as described [here](#3-container-building).
-
- **NOTE!**: It is not recommended to use Watchtower together with Portainer, as this is a stack that is tailored to your system and the Docker image is created individually and does not (yet) have a container registry such as Docker Hub is available!
+ Then have the container created as described [here](#3-build-container).
 
 ## 8. Support
 
-  For further questions or support, open an [Issue in GitHub](https://github.com/dbt1/docker-buildenv/issues) or report in the [Forum](https://forum.tuxbox-neutrino.org/forum /viewforum.php?f=77).
+  For further questions, problems or support, open an [Issue in GitHub](https://github.com/dbt1/docker-buildenv/issues) or report in the [Forum](https://forum.tuxbox-neutrino.org /forum/viewforum.php?f=77).
