@@ -145,11 +145,11 @@ Die Verwendung dieses Repositorys soll helfen, Docker-Container zu erzeugen, die
  
   Docker-compose Wrapper ausführen:
 
-   **Hinweis:** Das vorangestellte `./` ist hier wichtig, da es sich um ein Wrapperscript handelt, welches sich im Repo befindet und das echte `docker-compose` aufruft, aber vorher automatisch eine `.env`-Datei wie in  [Schritt 2.2](#22-umgebungsvariablen-konfigurieren) beschrieben erzeugt! Dieses Wrapperscript nimmt alle Parameter an, die für `docker-compose` relevant sind. Das bedeutet, dass z.B. eine alternative `.env-Datei` verwendet werden kann. Dies soll lediglich den Aufwand für die Befehlseingabe verringern.
-
    ```bash
    ./docker-compose build
    ```
+
+   **Hinweis:** Das vorangestellte `./` ist hier zu beachten, da sich das Wrapperscript im Repo befindet. Das Wrapper-Script ruft `docker-compose` wie vorgesehen auf, allerdings nachdem automatisch eine `.env`-Datei, wie in  [Schritt 2.2](#22-umgebungsvariablen-konfigurieren) beschrieben ist, erzeugt wurde! Dieses Wrapperscript nimmt alle Parameter an, die für `docker-compose` üblich sind. Es dient lediglich dazu, den Aufwand für die Befehlseingabe zur Erzeugung der Umgebungsvariablen, welche über die generierte `.env`-Datei bereitgestellt werden, zu verringern. 
 
 ### 3.2 Beispiel 2
 
@@ -246,13 +246,11 @@ Die Verwendung dieses Repositorys soll helfen, Docker-Container zu erzeugen, die
   ~/docker-buildenv$ git pull -r origin master
  ```
 
- Anschließend wie [hier](#3-container-bauen) beschrieben, den Container neu bauen lassen.
-
- **HINWEIS!**: Von der Verwendung von Watchtower zusammen mit Portainer ist abzuraten, da es sich hierbei um einen Stack handelt, der auf dein System abgestimmt ist und das Dockerimage individuell erstellt wird und (noch) nicht über eine Container Registry wie z.B. Docker Hub verfügbar ist!
+ Anschließend wie [hier](#3-container-bauen) beschrieben, den Container erstellen lassen.
 
 ## 8. Unterstützung
 
-  Für weitere Fragen oder Unterstützung öffne ein [Issue im GitHub](https://github.com/dbt1/docker-buildenv/issues) oder melde Dich im [Forum](https://forum.tuxbox-neutrino.org/forum/viewforum.php?f=77).
+  Für weitere Fragen, Problemen oder Unterstützung öffne ein [Issue im GitHub](https://github.com/dbt1/docker-buildenv/issues) oder melde Dich im [Forum](https://forum.tuxbox-neutrino.org/forum/viewforum.php?f=77).
 
 
 
