@@ -6,7 +6,7 @@ def translate_readme(input_text, target_lang):
     translated_text = translated.text
     
     # add hint for automatically translation
-    translated_text = f"Note: This is an automatically translated file. Original content from [here](https://github.com/dbt1/docker-tuxbox-build/blob/master/README-de.md):\n\n{translated_text}"
+    translated_text = f"Note: This is an automatically translated file. Original content from [here](https://github.com/tuxbox-neutrino/docker-buildenv/blob/master/README-de.md):\n\n{translated_text}"
 
     # Use this workaround, because translater breaks some links and anchors
     translated_text = translated_text.replace("[Build Image](#Build Image)", "[Build Image](#build-image)")
