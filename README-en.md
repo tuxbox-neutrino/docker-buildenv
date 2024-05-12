@@ -49,7 +49,7 @@ The use of this repository is intended to help create Docker containers that pro
 ### 2.1. Clone repository and switch to the cloned repo
 
    ```bash
-   git clone https://github.com/dbt1/docker-buildenv.git && cd docker-buildenv
+   git clone https://github.com/tuxbox-neutrino/docker-buildenv.git && cd docker-buildenv
    ```
 
 ### 2.2. Configure environment variables
@@ -215,7 +215,7 @@ The use of this repository is intended to help create Docker containers that pro
 
 ## 6.2. Use build environment
 
-  After logging into the container, you are already in the directory where the init script is located. Now you can continue as described [here](https://github.com/tuxbox-neutrino/buildenv/blob/master/README.md).
+  After logging into the container, you are already in the directory in which the init script is located. Now you can continue as described [here](https://github.com/tuxbox-neutrino/buildenv/blob/master/README.md).
 
   The images and packages produced by the build system are made available via persistent volumes within your host home directory. By default, this location is intended for this:
 
