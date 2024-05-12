@@ -37,6 +37,6 @@ jobs:
         git config --global user.email "actions@github.com"
         git config --global user.name "GitHub Actions"
         git add README-en.md
-        git commit -m "readme: Automatically translated README to English"
+        git commit -m "readme: Automatically translated README"
         git push
 
