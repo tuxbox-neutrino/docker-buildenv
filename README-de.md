@@ -48,7 +48,7 @@ Die Verwendung dieses Repositorys soll helfen, Docker-Container zu erzeugen, die
 ### 2.1. Repository klonen und in das geklonte Repo wechseln
 
    ```bash
-   git clone https://github.com/dbt1/docker-buildenv.git && cd docker-buildenv
+   git clone https://github.com/tuxbox-neutrino/docker-buildenv.git && cd docker-buildenv
    ```
 
 ### 2.2. Umgebungsvariablen konfigurieren
