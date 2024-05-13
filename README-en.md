@@ -1,11 +1,11 @@
-Note: This is an automatically translated file. Original content from [here](https://github.com/dbt1/docker-tuxbox-build/blob/master/README-de.md):
+Note: This is an automatically translated file. Original content from [here](https://github.com/tuxbox-neutrino/docker-buildenv/blob/master/README-de.md):
 
 This repository contains the necessary files to configure, build, and launch a Docker container, including `docker-compose.yaml`, `Dockerfile`, and scripts. Some environment variables are stored in a `.env` file, which must be created with the `create-env.sh` script so that some settings can be adopted by the host system. You also need a base Docker image that is automatically requested from Docker Hub.
 The use of this repository is intended to help create Docker containers that provide the necessary requirements to be able to build flash images and packages with the Yocto/OE build system.
 
 - [1. Requirements](#1-requirements)
 - [2. Prepare](#2-prepare)
-  - [2.1. Clone repository and switch to the cloned repo](#21-repository-clone-and-switch-to-the-cloned-repo)
+  - [2.1. Clone repository and switch to the cloned repo](#21-clone-repository-and-switch-to-the-cloned-repo)
   - [2.2. Configure environment variables](#22-configure-environment-variables)
   - [2.3 Volumes](#23-volumes)
   - [2.4 Configure Ports](#24-ports-configure)
@@ -15,7 +15,7 @@ The use of this repository is intended to help create Docker containers that pro
   - [3.1 Example 1](#31-example-1)
   - [3.2 Example 2](#32-example-2)
 - [4. Start container](#4-start-container)
-- [5. Stop container](#5-stop-container)
+- [5. stop container](#5-container-stop)
 - [6. Using the Container](#6-using-the-container)
 - [6.1. Login](#61-login)
 - [6.2. Use build environment](#62-build-environment-use)
@@ -42,7 +42,7 @@ The use of this repository is intended to help create Docker containers that pro
    ```bash
    sudo usermod -aG docker $USER
    ```
-  Then to apply the setting, either log out and log in again or restart!
+  To apply the settings, either log out and log in again or restart!
 
 ## 2. Prepare
 
@@ -60,7 +60,7 @@ The use of this repository is intended to help create Docker containers that pro
    ./create-env.sh
    ```
    
-  The script gets some environment variables from the host system and puts them into an `.env` file so that the container is configured to suit your host system. If this does not cover your requirements, you can adapt this generated `.env` file. However, you should not run the script again, otherwise the `.env` file will be overwritten again. It is therefore advisable to either rename this customized `.env` file and rename it accordingly in the `docker-compose.yml` file, or preferably to use another one in this form as a parameter when running `docker-compose` - -env-file <my .env file>` passed to `docker-compose`.
+  The script gets some environment variables from the host system and puts them into an `.env` file so that the container is configured to suit your host system. As a rule, that should be enough. Adjustments are usually not required. However, if this does not cover your requirements, you can adapt this generated `.env` file. However, you should not run the script again, otherwise the `.env` file will be overwritten again. It is therefore advisable to either rename this customized `.env` file and rename it accordingly in the `docker-compose.yml` file, or preferably to use another one in this form as a parameter when running `docker-compose` - -env-file <my .env file>` passed to `docker-compose`.
 
 ### 2.3 Volumes
 
@@ -94,11 +94,11 @@ The use of this repository is intended to help create Docker containers that pro
 
   - Port: 8080 (host) -> 80 (container)
 
-  This enables access via web server to the generated images and packages (ipk's). Set-top boxes can therefore access updates directly from your home network, for example. If port 8080 on your host system is already in use, you can either adjust these settings in the `docker-compose.yml` file or specify them when starting the container. This could look like this if you map to port 8081:
+  This enables access via web server to the generated images and packages (ipk's). Set-top boxes can therefore access updates directly from your home network, for example. If port 8080 on your host system is already occupied, you can either adjust these settings in the `docker-compose.yml` file or specify them when starting the container. This might look like this if you map to port 8081:
 
   - 808**1**:80
    
-  Settings on the web server can be made in the responsible lightttpd configuration file, which is available in the corresponding volume:
+  Settings on the web server can be made in the responsible lighttpd configuration file, which is available in the corresponding volume:
 
   ```bash
    ~/tuxbox
@@ -211,11 +211,11 @@ The use of this repository is intended to help create Docker containers that pro
   ~/tuxbox/buildenv$ git pull -r origin master
   ```
 
-  From now on you can work with the container.
+  From now on you can use the build environment with the container.
 
 ## 6.2. Use build environment
 
-  After logging into the container, you are already in the directory in which the init script is located. Now you can continue as described [here](https://github.com/tuxbox-neutrino/buildenv/blob/master/README.md).
+  After logging into the container, you are already in the `buildenv` directory, where the init script is located. Now you can continue as described [here](https://github.com/tuxbox-neutrino/buildenv/blob/master/README.md).
 
   The images and packages produced by the build system are made available via persistent volumes within your host home directory. By default, this location is intended for this:
 
@@ -248,7 +248,7 @@ The use of this repository is intended to help create Docker containers that pro
   ~/docker-buildenv$ git pull -r origin master
  ```
 
- Then have the container created as described [here](#3-build-container).
+ Then have the container created as described [here](#3-container-building).
 
 ## 8. Support
 
