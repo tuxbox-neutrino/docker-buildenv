@@ -5,7 +5,7 @@ The use of this repository is intended to help create Docker containers that pro
 
 - [1. Requirements](#1-requirements)
 - [2. Prepare](#2-prepare)
-  - [2.1. Clone repository and switch to the cloned repo](#21-clone-repository-and-switch-to-the-cloned-repo)
+  - [2.1. Clone repository and switch to the cloned repo](#21-repository-clone-and-switch-to-the-cloned-repo)
   - [2.2. Configure environment variables](#22-configure-environment-variables)
   - [2.3 Volumes](#23-volumes)
   - [2.4 Configure Ports](#24-ports-configure)
@@ -42,7 +42,7 @@ The use of this repository is intended to help create Docker containers that pro
    ```bash
    sudo usermod -aG docker $USER
    ```
-  To apply the settings, either log out and log in again or restart!
+  Then to apply the setting, either log out and log in again or restart!
 
 ## 2. Prepare
 
@@ -66,7 +66,7 @@ The use of this repository is intended to help create Docker containers that pro
 
   The container uses Docker Volumes to store persistent data, which allows access to specific files and directories permanently in the container.
   In the standard configuration, these volumes are in principle integrated to suit the environment of your host system and mounted when the container is started, so that ideally you do not have to change anything in the volume configuration.
-  If you want to make changes to this, you can find the configuration of the volumes in the `docker-compose.yml`. **Note** that these settings are normally aligned with the paths as preconfigured for the Yocto/OE build environment using the init script from the Buildenv repository. If adjustments are made to this, you should take this into account!
+  If you want to make changes to this, you can find the configuration of the volumes in `docker-compose.yml`. **Note** that these settings are normally aligned with the paths as preconfigured for the Yocto/OE build environment using the init script from the Buildenv repository. If adjustments are made to this, you should take this into account!
   
   These paths are mounted as volumes in the container. You have normal access to it via your host:
 
@@ -94,7 +94,7 @@ The use of this repository is intended to help create Docker containers that pro
 
   - Port: 8080 (host) -> 80 (container)
 
-  This enables access via web server to the generated images and packages (ipk's). Set-top boxes can therefore access updates directly from your home network, for example. If port 8080 on your host system is already occupied, you can either adjust these settings in the `docker-compose.yml` file or specify them when starting the container. This might look like this if you map to port 8081:
+  This enables access via web server to the generated images and packages (ipk's). Set-top boxes can therefore access updates directly from your home network, for example. If port 8080 on your host system is already occupied, you can either adjust these settings in the `docker-compose.yml` file or specify them when starting the container. This could look like this if you map to port 8081:
 
   - 808**1**:80
    
@@ -151,13 +151,13 @@ The use of this repository is intended to help create Docker containers that pro
    ./docker-compose build
    ```
 
-   **Note:** The preceding `./` must be noted here as the wrapper script is in the repo. The wrapper script calls `docker-compose` as intended, but after automatically creating an `.env` file as described in [Step 2.2](#22-configure-environment-variables)! This wrapper script takes all parameters common to `docker-compose`. It only serves to reduce the effort required to enter commands to create the environment variables, which are provided via the generated `.env` file.
+   **Note:** The preceding `./` must be taken into account here since the wrapper script is in the repo. The wrapper script calls `docker-compose` as intended, but after automatically creating an `.env` file as described in [Step 2.2](#22-configure-environment-variables)! This wrapper script takes all parameters common to `docker-compose`. It only serves to reduce the effort required to enter commands to create the environment variables, which are provided via the generated `.env` file.
 
 ### 3.2 Example 2
 
   Run docker-compose: with different `.env file`
 
-  **Note:** there is an `.env.sample` included in the repository as an example. However, if desired, this must be adjusted and explicitly passed to `docker-compose` when creating the container.
+  **Note:** Hm repository includes an `.env.sample` as an example. However, if desired, this must be adjusted and explicitly passed to `docker-compose` when creating the container.
 
   ```bash
   docker-compose --env-file <path to other .env file> build
