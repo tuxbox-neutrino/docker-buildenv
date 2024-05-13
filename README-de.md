@@ -59,7 +59,7 @@ Die Verwendung dieses Repositorys soll helfen, Docker-Container zu erzeugen, die
    ./create-env.sh
    ```
    
-  Das Script holt einige Umgebungsvariablen vom Host-System und passt, bzw. baut, diese in eine `.env`-Datei ein, damit der Container passend zu deinem Host-System konfiguriert wird. Sollten damit deine Anforderungen noch nicht abgedeckt sein, kannst Du diese erzeugte `.env`-Datei anpassen. Das Script solltest Du dann aber nicht noch einnmal ausführen, da die `.env`-Datei sonst wieder überschrieben wird. Es ist daher ratsam, etweder diese angepasste `.env`-Datei umzubenennen und entsprechend ebenfalls in der `docker-compose.yml`-Datei umbenennen, oder bevorzugt beim ausführen von `docker-compose` als Parameter eine andere in dieser Form `--env-file <meine .env-Datei>` an `docker-compose` übegeben.
+  Das Script holt einige Umgebungsvariablen vom Host-System und passt, bzw. baut, diese in eine `.env`-Datei ein, damit der Container passend zu deinem Host-System konfiguriert wird. In der Regel sollte das schon reichen. Anpasseungen sind normalerweise nicht erforderlich. Sollten damit deine Anforderungen aber noch nicht abgedeckt sein, kannst Du diese erzeugte `.env`-Datei anpassen. Das Script solltest Du dann aber nicht noch einnmal ausführen, da die `.env`-Datei sonst wieder überschrieben wird. Es ist daher ratsam, etweder diese angepasste `.env`-Datei umzubenennen und entsprechend ebenfalls in der `docker-compose.yml`-Datei umbenennen, oder bevorzugt beim ausführen von `docker-compose` als Parameter eine andere in dieser Form `--env-file <meine .env-Datei>` an `docker-compose` übegeben.
 
 ### 2.3 Volumes
 
@@ -97,7 +97,7 @@ Die Verwendung dieses Repositorys soll helfen, Docker-Container zu erzeugen, die
 
   - 808**1**:80
    
-  Einstellungen am Webserver können in der zuständigen lightttpd-Konfugarionsdatei vorgenommen werden, welche im entsprechenden Volume zur Verfügung steht:
+  Einstellungen am Webserver können in der zuständigen lighttpd-Konfugarionsdatei vorgenommen werden, welche im entsprechenden Volume zur Verfügung steht:
 
   ```bash
    ~/tuxbox
@@ -210,11 +210,11 @@ Die Verwendung dieses Repositorys soll helfen, Docker-Container zu erzeugen, die
   ~/tuxbox/buildenv$ git pull -r origin master
   ```
 
-  Ab jetzt kannst Du mit dem Container arbeiten.
+  Ab jetzt kannst Du die Buildumgebung mit dem Container nutzen.
 
 ## 6.2. Buildumgebung nutzen
 
-  Nach dem Einloggen in den Container befindest Du dich bereits im Verzeichnis, in welchem sich das Init-Script befindet. Jetzt kannst du wie [hier](https://github.com/tuxbox-neutrino/buildenv/blob/master/README.md) beschrieben fortfahren.
+  Nach dem Einloggen in den Container befindest Du dich bereits im Verzeichnis `buildenv`, in welchem sich das Init-Script befindet. Jetzt kannst du wie [hier](https://github.com/tuxbox-neutrino/buildenv/blob/master/README.md) beschrieben fortfahren.
 
   Die vom Buildsystem erzeugten Images und Pakete werden über persistente Volumes innerhalb deines Home-Verzeichnisses des Hosts verfügbar gemacht. Standardmäßig ist dafür dieser Ort vorgesehen:
 
