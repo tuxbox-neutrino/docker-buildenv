@@ -59,12 +59,12 @@ Die Verwendung dieses Repositorys soll helfen, Docker-Container zu erzeugen, die
    ./create-env.sh
    ```
    
-  Das Script holt einige Umgebungsvariablen vom Host-System und passt, bzw. baut, diese in eine `.env`-Datei ein, damit der Container passend zu deinem Host-System konfiguriert wird. In der Regel sollte das schon reichen. Anpasseungen sind normalerweise nicht erforderlich. Sollten damit deine Anforderungen aber noch nicht abgedeckt sein, kannst Du diese erzeugte `.env`-Datei anpassen. Das Script solltest Du dann aber nicht noch einnmal ausführen, da die `.env`-Datei sonst wieder überschrieben wird. Es ist daher ratsam, etweder diese angepasste `.env`-Datei umzubenennen und entsprechend ebenfalls in der `docker-compose.yml`-Datei umbenennen, oder bevorzugt beim ausführen von `docker-compose` als Parameter eine andere in dieser Form `--env-file <meine .env-Datei>` an `docker-compose` übegeben.
+  Das Script holt einige Umgebungsvariablen vom Host-System und passt, bzw. baut, diese in eine `.env`-Datei ein, damit der Container passend zu deinem Host-System konfiguriert wird. In der Regel sollte das schon reichen. Anpassungen sind normalerweise nicht erforderlich. Sollten damit deine Anforderungen aber noch nicht abgedeckt sein, kannst Du diese erzeugte `.env`-Datei anpassen. Das Script solltest Du dann aber nicht noch einnmal ausführen, da die `.env`-Datei sonst wieder überschrieben wird. Es ist daher ratsam, etweder diese angepasste `.env`-Datei umzubenennen und entsprechend ebenfalls in der `docker-compose.yml`-Datei umbenennen, oder bevorzugt beim ausführen von `docker-compose` als Parameter eine andere in dieser Form `--env-file <meine .env-Datei>` an `docker-compose` übegeben.
 
 ### 2.3 Volumes
 
   Der Container verwendet Docker Volumes, um persistente Daten zu speichern, welche Zugriff auf spezifische Dateien und Verzeichnisse dauerhaft im Container ermöglichen.
-  In der Standardkonfiguration werden prinzipell diese Volumes passend zur Umgebung deines Host-Systems eingebunden und beim Starten des Containers eingehängt, so dass Du im Idealfall an der Volumes-Konfiguration nichts ändern musst.
+  In der Standardkonfiguration werden prinzipiell diese Volumes passend zur Umgebung deines Host-Systems eingebunden und beim Starten des Containers eingehängt, so dass Du im Idealfall an der Volumes-Konfiguration nichts ändern musst.
   Solltest Du daran Änderungen vornehmen wollen, findest Du in der `docker-compose.yml` die Konfiguration der Volumes. **Beachte** aber dass diese Einstellungem normalerweise mit den Pfaden wie sie für die Yocto/OE Buildumgebung mit dem init-Script aus dem Buildenv-Repository vorkonfiguriert werden, abgestimmt sind. Sollten daran Anpassungen vorgenommen werden, solltest Du das berücksichtigen!
   
   Diese Pfade werden als Volumes im Container bereitgestellt. Du hast über dein Host darauf normalen Zugriff:
@@ -150,13 +150,13 @@ Die Verwendung dieses Repositorys soll helfen, Docker-Container zu erzeugen, die
    ./docker-compose build
    ```
 
-   **Hinweis:** Das vorangestellte `./` ist hier zu beachten, da sich das Wrapperscript im Repo befindet. Das Wrapper-Script ruft `docker-compose` wie vorgesehen auf, allerdings nachdem automatisch eine `.env`-Datei, wie in  [Schritt 2.2](#22-umgebungsvariablen-konfigurieren) beschrieben ist, erzeugt wurde! Dieses Wrapperscript nimmt alle Parameter an, die für `docker-compose` üblich sind. Es dient lediglich dazu, den Aufwand für die Befehlseingabe zur Erzeugung der Umgebungsvariablen, welche über die generierte `.env`-Datei bereitgestellt werden, zu verringern. 
+   **Hinweis:** Das vorangestellte `./` ist hier zu berücksichtigen, da sich das Wrapperscript im Repo befindet. Das Wrapper-Script ruft `docker-compose` wie vorgesehen auf, allerdings nachdem automatisch eine `.env`-Datei, wie in  [Schritt 2.2](#22-umgebungsvariablen-konfigurieren) beschrieben ist, erzeugt wurde! Dieses Wrapperscript nimmt alle Parameter an, die für `docker-compose` üblich sind. Es dient lediglich dazu, den Aufwand für die Befehlseingabe zur Erzeugung der Umgebungsvariablen, welche über die generierte `.env`-Datei bereitgestellt werden, zu verringern. 
 
 ### 3.2 Beispiel 2
 
   Docker-compose ausführen: mit anderer `.env-Datei`
 
-  **Hinweis:** im Repository ist eine `.env.sample` als Beispiel enthalten. Falls gewünscht, muss diese allerdings angepasst und explizit beim Erzeugen des Containers an `docker-compose` übergeben werden.
+  **Hinweis:** Hm Repository ist eine `.env.sample` als Beispiel enthalten. Falls gewünscht, muss diese allerdings angepasst und explizit beim Erzeugen des Containers an `docker-compose` übergeben werden.
 
   ```bash
   docker-compose --env-file <Pfad zu anderer .env-Datei> build
