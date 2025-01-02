@@ -1,5 +1,5 @@
 ## Use the official Debian 11 image based up debian:bullseye-slim as a base
-FROM dbt1/debian-tuxbox-base:latest
+FROM dbt1/debian-tuxbox-base:v1.6
 
 ### Args
 ARG PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
