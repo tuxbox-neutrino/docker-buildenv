@@ -1,7 +1,17 @@
 
-Dieses Repository enthält die notwendigen Dateien, um einen Docker-Container zu konfigurieren, zu erzeugen und zu starten, einschließlich `docker-compose.yaml`, `Dockerfile` und Skripte. Einige Umgebungsvariablen werden in eine `.env`-Datei hinterlegt, die mit dem Script `create-env.sh` erzeugt werden müssen, damit einige Einstellungen vom Host-System übernommen werden können. Benötigt wird auch ein Basis Dockerimage, dass automatisch von Docker-Hub angefordert wird.
-Die Verwendung dieses Repositorys soll helfen, Docker-Container zu erzeugen, die die notwendigen Voraussetzungen bereitstellen, um Flashimages und Pakete mit dem Yocto/OE Buildsystem bauen zu können.
+Docker Buildumgebung
 
+Dieses Repository enthält die notwendigen Dateien, um einen Docker-Container zu konfigurieren, zu erzeugen und zu starten, einschließlich docker-compose.yaml, Dockerfile und Skripte. Einige Umgebungsvariablen werden in eine .env-Datei hinterlegt, die mit dem Skript create-env.sh erzeugt werden muss, um einige Einstellungen vom Host-System zu übernehmen. Ein Basis-Dockerimage, wird dabei automatisch von Docker-Hub geladen.
+
+Die Verwendung dieses Repositorys soll helfen, Docker-Container zu erzeugen, die die notwendigen Voraussetzungen bereitstellen, um Neutrino Flashimages und Pakete mit dem Yocto/OE-Buildsystem bauen zu können.
+
+
+# Inhalt
+- [Inhalt](#inhalt)
+- [🚀 Schnellstart](#-schnellstart)
+  - [Container bauen](#container-bauen)
+  - [Auf Container einloggen](#auf-container-einloggen)
+  - [Buildumgebung im Docker-Terminal initialisieren](#buildumgebung-im-docker-terminal-initialisieren)
 - [1. Voraussetzungen](#1-voraussetzungen)
 - [2. Vorbereiten](#2-vorbereiten)
   - [2.1. Repository klonen und in das geklonte Repo wechseln](#21-repository-klonen-und-in-das-geklonte-repo-wechseln)
@@ -16,12 +26,60 @@ Die Verwendung dieses Repositorys soll helfen, Docker-Container zu erzeugen, die
 - [4. Container starten](#4-container-starten)
 - [5. Container stoppen](#5-container-stoppen)
 - [6. Verwenden des Containers](#6-verwenden-des-containers)
-- [6.1. Einloggen](#61-einloggen)
-- [6.2. Buildumgebung nutzen](#62-buildumgebung-nutzen)
+  - [6.1. Einloggen](#61-einloggen)
+  - [6.2. Buildumgebung nutzen](#62-buildumgebung-nutzen)
 - [7. Container aktualisieren](#7-container-aktualisieren)
 - [8. Unterstützung](#8-unterstützung)
 
-## 1. Voraussetzungen
+
+
+# 🚀 Schnellstart
+
+Falls du es eilig hast und den Container schnell zum Laufen bringen willst, kannst du die folgenden Schritte in einem Terminal ausführen. Dies setzt voraus, dass Docker und Docker Compose bereits installiert sind.
+
+## Container bauen
+
+```bash
+~/docker-buildenv $ git clone https://github.com/tuxbox-neutrino/docker-buildenv.git && cd docker-buildenv
+                  ./create-env.sh
+                  docker-compose build
+                  docker-compose up -d
+```
+
+## Auf Container einloggen
+
+```bash
+~/docker-buildenv $ docker exec -it --user $USER tuxbox-build bash
+```
+
+## Buildumgebung im Docker-Terminal initialisieren
+
+```bash
+user@asjghd76dfwh:~/tuxbox/buildenv$ ./init && cd poky-3.2.4
+...
+Create configurations ...
+...
+Start build
+------------------------------------------------------------------------------------------------
+Now you are ready to build your own images and packages.
+Selectable machines are:
+
+        hd51 ax51 mutant51 bre2ze4k hd60 ax60 hd61 ax61 h7 zgemmah7 osmio4k osmio4kplus e4hdultra
+
+Select your favorite machine (or identical) and the next steps are:
+
+        cd /home/tg/tuxbox/buildenv/poky-3.2.4 && . ./oe-init-build-env build/<machine>
+        bitbake neutrino-image
+
+For more information and next steps take a look at the README.md!
+user@asjghd76dfwh:~/tuxbox/buildenv/poky-3.2.4$ 
+```
+
+Nach diesen Schritten läuft der Container im Hintergrund und stellt die Yocto/OE-Buildumgebung bereit. Du kannst nun mit dem Buildprozess beginnen.
+
+Hinweis: Weitere Informationen zur eigentlichen Buildumgebung findest du [hier](https://github.com/tuxbox-neutrino/buildenv/blob/master/README.md) Weitere Anpassungen sollte am Container selbst nicht notwendig sein, aber schaue dir die folgenden Informationen weiter an.
+
+# 1. Voraussetzungen
 
   Getestet wurde unter Linux Debian 11.x, Ubuntu 20.04, 22.04. Es sollte aber auf jeder aktuellen Distribution funktionieren auf der Docker läuft.
 
@@ -43,15 +101,15 @@ Die Verwendung dieses Repositorys soll helfen, Docker-Container zu erzeugen, die
    ```
   Danach zum Übernehmen der Einstellung entweder ausloggen und wieder einloggen oder einen Neustart durchführen!
 
-## 2. Vorbereiten
+# 2. Vorbereiten
 
-### 2.1. Repository klonen und in das geklonte Repo wechseln
+## 2.1. Repository klonen und in das geklonte Repo wechseln
 
    ```bash
    git clone https://github.com/tuxbox-neutrino/docker-buildenv.git && cd docker-buildenv
    ```
 
-### 2.2. Umgebungsvariablen konfigurieren
+## 2.2. Umgebungsvariablen konfigurieren
 
    Führe dieses Script aus, um die notwendige `.env`-Datei zu erzeugen:
 
@@ -61,7 +119,7 @@ Die Verwendung dieses Repositorys soll helfen, Docker-Container zu erzeugen, die
    
   Das Script holt einige Umgebungsvariablen vom Host-System und passt, bzw. baut, diese in eine `.env`-Datei ein, damit der Container passend zu deinem Host-System konfiguriert wird. In der Regel sollte das schon reichen. Anpassungen sind normalerweise nicht erforderlich. Sollten damit deine Anforderungen aber noch nicht abgedeckt sein, kannst Du diese erzeugte `.env`-Datei anpassen. Das Script solltest Du dann aber nicht noch einnmal ausführen, da die `.env`-Datei sonst wieder überschrieben wird. Es ist daher ratsam, etweder diese angepasste `.env`-Datei umzubenennen und entsprechend ebenfalls in der `docker-compose.yml`-Datei umbenennen, oder bevorzugt beim ausführen von `docker-compose` als Parameter eine andere in dieser Form `--env-file <meine .env-Datei>` an `docker-compose` übegeben.
 
-### 2.3 Volumes
+## 2.3 Volumes
 
   Der Container verwendet Docker Volumes, um persistente Daten zu speichern, welche Zugriff auf spezifische Dateien und Verzeichnisse dauerhaft im Container ermöglichen.
   In der Standardkonfiguration werden prinzipiell diese Volumes passend zur Umgebung deines Host-Systems eingebunden und beim Starten des Containers eingehängt, so dass Du im Idealfall an der Volumes-Konfiguration nichts ändern musst.
@@ -83,11 +141,11 @@ Die Verwendung dieses Repositorys soll helfen, Docker-Container zu erzeugen, die
         ├── sstate-cache
   ```
 
-### 2.4 Ports konfigurieren
+## 2.4 Ports konfigurieren
 
   Der Container stellt einige Zugänge über bestimmte Netzwerkports zur Verfügung. Dies erlaubt den Zugang über einen Webbrowser auf die Buildergebnisse und den Zugang via ssh auf den Container.
 
-#### 2.4.1 Webzugriff
+### 2.4.1 Webzugriff
 
   Standardmäßig ist der Container so konfiguriert, dass er auf Port 80 lauscht. Dein Host wird über Port 8080 auf den eingebauten Webserver (`lighttpd`) des Containers gemappt:
 
@@ -118,7 +176,7 @@ Die Verwendung dieses Repositorys soll helfen, Docker-Container zu erzeugen, die
   dir-listing.activate = "enable"
  ```
  
-#### 2.4.2 SSH
+### 2.4.2 SSH
 
   Üblicherweise greift man auf den Container direkt über `docker exec` zu.
   Da Git ohnehin Bestandteil im Container ist, wird auch ein ssh-Server zur Verfügung gestellt. Der ssh-Server ist standardmäßig so konfiguriert:
@@ -140,9 +198,9 @@ Die Verwendung dieses Repositorys soll helfen, Docker-Container zu erzeugen, die
   ssh <benutzer>@<IP oder Hostname des Rechners auf dem der Container läuft> -p 222
   ```
     
-## 3. Container bauen
+# 3. Container bauen
 
-### 3.1 Beispiel 1
+## 3.1 Beispiel 1
  
   Docker-compose Wrapper ausführen:
 
@@ -152,7 +210,7 @@ Die Verwendung dieses Repositorys soll helfen, Docker-Container zu erzeugen, die
 
    **Hinweis:** Das vorangestellte `./` ist hier zu berücksichtigen, da sich das Wrapperscript im Repo befindet. Das Wrapper-Script ruft `docker-compose` wie vorgesehen auf, allerdings nachdem automatisch eine `.env`-Datei, wie in  [Schritt 2.2](#22-umgebungsvariablen-konfigurieren) beschrieben ist, erzeugt wurde! Dieses Wrapperscript nimmt alle Parameter an, die für `docker-compose` üblich sind. Es dient lediglich dazu, den Aufwand für die Befehlseingabe zur Erzeugung der Umgebungsvariablen, welche über die generierte `.env`-Datei bereitgestellt werden, zu verringern. 
 
-### 3.2 Beispiel 2
+## 3.2 Beispiel 2
 
   Docker-compose ausführen: mit anderer `.env-Datei`
 
@@ -162,19 +220,19 @@ Die Verwendung dieses Repositorys soll helfen, Docker-Container zu erzeugen, die
   docker-compose --env-file <Pfad zu anderer .env-Datei> build
   ```
 
-## 4. Container starten
+# 4. Container starten
 
    ```bash
    docker-compose up -d
    ```
 
-## 5. Container stoppen
+# 5. Container stoppen
 
    ```bash
    docker-compose down
    ```
 
-## 6. Verwenden des Containers
+# 6. Verwenden des Containers
 
 ## 6.1. Einloggen
 
@@ -238,7 +296,7 @@ Die Verwendung dieses Repositorys soll helfen, Docker-Container zu erzeugen, die
    - [http://IP<:PORT-NUMMER>](http://192.168.1.36:8080)
 
 
-## 7. Container aktualisieren
+# 7. Container aktualisieren
 
   Entsprechend wie unter [Schritt 2.1](#21-repository-klonen-und-in-das-geklonte-repo-wechseln) angegeben, kann das Repository, dass die Rezeptur für den Container enthält, regelmäßig aktualisiert werden.
   Dafür wechselt man in das Repository und führt dieses Kommando aus:
@@ -249,7 +307,7 @@ Die Verwendung dieses Repositorys soll helfen, Docker-Container zu erzeugen, die
 
  Anschließend wie [hier](#3-container-bauen) beschrieben, den Container erstellen lassen.
 
-## 8. Unterstützung
+# 8. Unterstützung
 
   Für weitere Fragen, Problemen oder Unterstützung öffne ein [Issue im GitHub](https://github.com/dbt1/docker-buildenv/issues) oder melde Dich im [Forum](https://forum.tuxbox-neutrino.org/forum/viewforum.php?f=77).
 
