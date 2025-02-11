@@ -58,10 +58,11 @@ if [ -n "$force_color_prompt" ]; then
 fi
 
 if [ "$color_prompt" = yes ]; then
-    PS1='\[\033[01;33m\]\u\[\033[01;33m\]@\[\033[01;33m\]\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+    PS1='\[\033[01;33m\]\u\[\033[01;33m\]@@LOCAL_HOSTNAME@\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
 else
-    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+    PS1='${debian_chroot:+($debian_chroot)}\u@@LOCAL_HOSTNAME@:\w\$ '
 fi
+
 
 unset color_prompt force_color_prompt
 
@@ -116,8 +117,56 @@ fi
 
 cd  @START_PATH@
 
-while IFS= read -r line; do echo -e "$line"; done < /etc/terminal-splash.txt
-echo -e "--------------------------------------------------------------"
-echo -e "Tuxbox-Builder Version: @VERSION@"
-echo -e "--------------------------------------------------------------"
+echo -e "--------------------------------------------------------------------"
+while IFS= read -r line; do
+    echo -e "$line"
+done < /etc/terminal-splash.txt
+echo -e "--------------------------------------------------------------------"
+echo -e "docker-buildenv:    v@DOCKER_BUILDENV_VERSION@\t| @DOCKER_BUILDENV_GIT_URL@"
+echo -e "buildenv:           $(git -C @START_PATH@  describe --tags --long | sed -e 's/-g[0-9a-f]\{7,\}$//' -e 's/-\([0-9]\+\)$/.\1/')\t| @BUILDENV_GIT_URL@"
+if [ -f /etc/os-release ]; then
+    PRETTY_NAME=$(grep '^PRETTY_NAME=' /etc/os-release | cut -d= -f2 | tr -d '"')
+    echo -e "OS-Version:         $PRETTY_NAME"
+fi
+echo -e "Kernel-Version:     $(uname -r)"
+echo -e "Container-Hostname: $(hostname)"
+echo -e "Container-IP:       $(hostname -I | awk '{print $1}')"
+echo -e "--------------------------------------------------------------------"
 echo -e ""
+
+convert_locale() {
+    local input_locale="$1"
+    echo "${input_locale%.*}:${input_locale%%_*}"
+}
+export LANG=@LANG@
+export LANGUAGE=$(convert_locale $LANG) 
+export LC_ALL=$LANG
+
+# Set the directory to check
+DIR_TO_CHECK=@START_PATH@
+
+# Detect system locale
+LOCALE=$(locale | grep LANG= | cut -d= -f2 | cut -d_ -f1)
+
+# Set link based on locale
+if [[ "$LOCALE" == "de" ]]; then
+  LINK="https://github.com/tuxbox-neutrino/buildenv/blob/master/README-de.md#14-init-skript-ausf%C3%BChren"
+else
+  LINK="https://github.com/tuxbox-neutrino/buildenv/blob/master/README-us.md#14-init-script"
+fi
+
+# Check for subdirectories starting with 'meta-'
+if ! find "$DIR_TO_CHECK" -type d -name "meta-*" | grep -q .; then
+  # Print bold and user-friendly message if no subdirectory matches
+  echo -e "--------------------------------------------------------------"
+  echo -e "\033[1m\033[33mNOTE: Your build environment seems to be uninitialized!\033[0m"
+  echo -e "--------------------------------------------------------------"
+  echo -e "\033[1mPlease run the init script to set up your environment.\033[0m"
+  echo -e ""
+  echo -e "./init && cd poky-@BUILDENV_VERSION@"
+  echo -e ""
+  echo -e "--------------------------------------------------------------"
+  echo -e "Refer to the instructions here:"
+  echo -e "\033[4m$LINK\033[0m"
+  echo -e ""
+fi

@@ -1,16 +1,28 @@
 #!/bin/bash
 
-# Path to script that will be executed before starts docker-compose
+# Path to script that will be executed before starting docker-compose
 ENV_SCRIPT="./create-env.sh"
+
+# Define exit codes as constants
+EXIT_USER_CANCEL=70
 
 # Check script
 if [ -x "$ENV_SCRIPT" ]; then
-    echo "executing $ENV_SCRIPT..."
-    $ENV_SCRIPT
+    echo "Executing $ENV_SCRIPT..."
+    "$ENV_SCRIPT"
+    EXIT_CODE=$?
+    
+    if [ $EXIT_CODE -eq $EXIT_USER_CANCEL ]; then
+        echo "create-env.sh was canceled by the user."
+        exit $EXIT_USER_CANCEL
+    elif [ $EXIT_CODE -ne 0 ]; then
+        echo "create-env.sh failed with exit code $EXIT_CODE."
+        exit $EXIT_CODE
+    fi
 else
     echo "Error: $ENV_SCRIPT not found or not executable."
     exit 1
 fi
 
-# Execute docker-compose with all parameters an sub commannds
+# Execute docker-compose with all parameters and subcommands
 docker-compose "$@"

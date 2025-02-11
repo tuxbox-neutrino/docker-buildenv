@@ -1,86 +1,118 @@
-
-
 services:
   tuxbox-build:
     container_name: tuxbox-build
-    image: tuxbox-build
-    environment:
-        - PATH=${USER_VOLUME_WORKBINDIR}:${USER_VOLUME_BINDIR}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-    env_file:
-        - .env
     build:
       context: .
       dockerfile: Dockerfile
       args:
-        - BUILDENV_GIT_URL=${BUILDENV_GIT_URL}
-        - BUILDENV_PREFIX=${BUILDENV_PREFIX}
-        - BUILDENV_VERSION=${BUILDENV_VERSION}
-        - DISPLAY=${DISPLAY}
-        - ENABLE_UI_TOOLS=false
-        - GIT_EMAIL=${GIT_EMAIL}
-        - GIT_USER=${GIT_USER}
-        - HISTFILE=${USER_VOLUME_DATADIR}/${HISTFILE_NAME}
-        - HISTFILE_NAME=${HISTFILE_NAME}
-        - HOST_PREFIX=${HOST_PREFIX}
-        - LOCALE_LANG=${LOCALE_LANG}
-        - LOCAL_HOSTNAME=${LOCAL_HOSTNAME}
-        - NVIDIA_VISIBLE_DEVICES=${NVIDIA_VISIBLE_DEVICES}
-        - QT_QUICK_BACKEND=${QT_QUICK_BACKEND}
-        - QT_XCB_GL_INTEGRATION=${QT_XCB_GL_INTEGRATION}
-        - START_PATH=${START_PATH}
-        - TB_BUILD_TIME=${TB_BUILD_TIME}
-        - TB_VERSION=${TB_VERSION}
-        - TERM=${TERM}
-        - TZ=${TZ}
-        - USER=${USER}
-        - USER_DIR=${USER_DIR}
-        - USER_GROUP=${USER_GROUP}
-        - USER_GROUP_ID=${USER_GROUP_ID}
-        - USER_ID=${USER_ID}
-        - USER_PASSWORD=${USER_PASSWORD}
-        - USER_VOLUME_WORKDIR=${USER_DIR}/${HOST_PREFIX}
-        - USER_VOLUME_DATADIR=${USER_VOLUME_DATADIR}
-        - XDG_CONFIG_HOME=${XDG_CONFIG_HOME}
-        - XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR}
+        DOCKER_BUILDENV_VERSION: ${DOCKER_BUILDENV_VERSION}
+        DOCKER_BUILDENV_GIT_URL: $DOCKER_BUILDENV_GIT_URL
 
+        PATH: "${USER_VOLUME_WORKDIR}/bin:${USER_VOLUME_BINDIR}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+        BUILDENV_GIT_URL: ${BUILDENV_GIT_URL}
+        BUILDENV_PREFIX: ${BUILDENV_PREFIX}
+        
+        # Host user and group
+        USER_NAME: ${USER_NAME}
+        USER_ID: ${USER_ID}
+        USER_GROUP: ${USER_GROUP}
+        USER_GROUP_ID: ${USER_GROUP_ID}
+        USER_PASSWORD: ${USER_PASSWORD}
+        USER_DIR: ${USER_DIR}
 
-    devices:
-      - /dev/dri:/dev/dri
-    ports:
-      # the host: container ports for web access, used for httpd inside container to get built packages and images via browser, wget, curl, set top boxes etc.
-      - "8080:80"
-      # the host: container ports for ssh access of users in its /home
-      - "222:22"
-    tty: true
-    working_dir: /
+        # More Build-Args
+        DISPLAY: ${DISPLAY}
+        ENABLE_UI_TOOLS: ${ENABLE_UI_TOOLS}
+        GIT_EMAIL: ${GIT_EMAIL}
+        GIT_USER: ${GIT_USER}
+        HISTFILE_NAME: ${HISTFILE_NAME}
+        HISTFILE: ${HISTFILE}
+        BUILDENV_INSTALL_PREFIX: ${BUILDENV_INSTALL_PREFIX}
+        LOCAL_HOSTNAME: ${LOCAL_HOSTNAME}
+        LOCALE_LANG: ${LOCALE_LANG}
+        TZ: ${TZ}
+        TERM: ${TERM}
+        NVIDIA_VISIBLE_DEVICES: ${NVIDIA_VISIBLE_DEVICES}
+        QT_QUICK_BACKEND: ${QT_QUICK_BACKEND}
+        QT_XCB_GL_INTEGRATION: ${QT_XCB_GL_INTEGRATION}
+        USER_VOLUME_WORKDIR: ${USER_VOLUME_WORKDIR}
+        USER_VOLUME_DATADIR: ${USER_VOLUME_DATADIR}
+        START_PATH: ${START_PATH}
+        WWW_DOCDIR: ${WWW_DOCDIR}
+        EXPLORER_ENABLE: ${EXPLORER_ENABLE}
+        EXPLORER_GIT_URL: ${EXPLORER_GIT_URL}
+        XDG_CONFIG_HOME: ${XDG_CONFIG_HOME}
+        XDG_RUNTIME_DIR: ${XDG_RUNTIME_DIR}
+
+    image: tuxbox-build
+
+    environment:
+      DOCKER_BUILDENV_VERSION: ${DOCKER_BUILDENV_VERSION}
+      DOCKER_BUILDENV_GIT_URL: $DOCKER_BUILDENV_GIT_URL
+      BUILDENV_GIT_URL: ${BUILDENV_GIT_URL}
+      BUILDENV_PREFIX: ${BUILDENV_PREFIX}
+      PATH: "${USER_VOLUME_WORKDIR}/bin:${USER_VOLUME_BINDIR}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+      DISPLAY: ${DISPLAY}
+      ENABLE_UI_TOOLS: ${ENABLE_UI_TOOLS}
+      GIT_EMAIL: ${GIT_EMAIL}
+      GIT_USER: ${GIT_USER}
+      HISTFILE_NAME: ${HISTFILE_NAME}
+      HISTFILE: ${HISTFILE}
+      BUILDENV_INSTALL_PREFIX: ${BUILDENV_INSTALL_PREFIX}
+      LOCAL_HOSTNAME: ${LOCAL_HOSTNAME}
+      LOCALE_LANG: ${LOCALE_LANG}
+      TZ: ${TZ}
+      TERM: ${TERM}
+      NVIDIA_VISIBLE_DEVICES: ${NVIDIA_VISIBLE_DEVICES}
+      QT_QUICK_BACKEND: ${QT_QUICK_BACKEND}
+      QT_XCB_GL_INTEGRATION: ${QT_XCB_GL_INTEGRATION}
+      USER: ${USER_NAME}
+      USER_ID: ${USER_ID}
+      USER_GROUP: ${USER_GROUP}
+      USER_GROUP_ID: ${USER_GROUP_ID}
+      USER_PASSWORD: ${USER_PASSWORD}
+      USER_DIR: ${USER_DIR}
+      USER_VOLUME_WORKDIR: ${USER_VOLUME_WORKDIR}
+      USER_VOLUME_DATADIR: ${USER_VOLUME_DATADIR}
+      START_PATH: ${START_PATH}
+      WWW_DOCDIR: ${WWW_DOCDIR}
+      EXPLORER_ENABLE: ${EXPLORER_ENABLE}
+      EXPLORER_GIT_URL: ${EXPLORER_GIT_URL}
+      XDG_CONFIG_HOME: ${XDG_CONFIG_HOME}
+      XDG_RUNTIME_DIR: ${XDG_RUNTIME_DIR}
+
     volumes:
       - ${USER_VOLUME_WORKDIR}:${USER_VOLUME_WORKDIR}
+      - ${USER_VOLUME_BINDIR}:${USER_DIR}/bin
+      - ${USER_VOLUME_DATADIR}:/data
+      - ${USER_VOLUME_WORKDIR}/.config:/config
+      - ${USER_VOLUME_WORKDIR}/.config/git/config:${XDG_CONFIG_HOME}/git
       - ${USER_DIR}/sstate-cache:${USER_DIR}/sstate-cache
       - ${USER_DIR}/Archive:${USER_DIR}/Archive
       - ${USER_DIR}/.ccache:${USER_DIR}/.ccache
       - ${USER_DIR}/sources:${USER_DIR}/sources
-      - ${USER_VOLUME_BINDIR}:${USER_DIR}/bin
-      - ${USER_VOLUME_WORKBINDIR}:${USER_VOLUME_WORKDIR}/bin
       - ${USER_DIR}/.ssh:${USER_DIR}/.ssh
-      - ${USER_VOLUME_DATADIR}:/data
-      - ${USER_VOLUME_WORKDIR}/.config:/config
-      - ${USER_VOLUME_WORKDIR}/.config/git/config:${XDG_CONFIG_HOME}/git
+
+
+      # Optional for UI tools
       - /tmp/.X11-unix:/tmp/.X11-unix
       - /usr/lib/x86_64-linux-gnu/mesa:/usr/lib/x86_64-linux-gnu/mesa
-    networks:
-      - tuxbox-network
-    #hostname: ${LOCAL_HOSTNAME}
+
+    devices:
+      - /dev/dri:/dev/dri  # For GPU acceleration if needed
+
+    ports:
+      - "8080:80"  # Webserver
+      - "222:22"   # SSH
+
+    tty: true
+    working_dir: /
+
     cap_add:
       - SYS_ADMIN
+    
     restart: unless-stopped
 
 networks:
-  tuxbox-network:
+  default:
     driver: bridge
-
-volumes:
-  tuxbox-volumes:
-    driver: local
-
-
-

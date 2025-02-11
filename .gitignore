@@ -3,5 +3,6 @@
 
 .gitconfig
 .directory
-init.sh
+
 *-swp
+env_backups
