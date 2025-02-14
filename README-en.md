@@ -1,255 +1,192 @@
-Note: This is an automatically translated file. Original content from [here](https://github.com/tuxbox-neutrino/docker-buildenv/blob/master/README-de.md):
+<!-- LANGUAGE_LINKS_START -->
+[🇩🇪 German](README-de.md) | <span style="color: grey;">🇬🇧 English</span>
+<!-- LANGUAGE_LINKS_END -->
 
-This repository contains the necessary files to configure, build, and launch a Docker container, including `docker-compose.yaml`, `Dockerfile`, and scripts. Some environment variables are stored in a `.env` file, which must be created with the `create-env.sh` script so that some settings can be adopted by the host system. You also need a base Docker image that is automatically requested from Docker Hub.
-The use of this repository is intended to help create Docker containers that provide the necessary requirements to be able to build flash images and packages with the Yocto/OE build system.
+# Docker Build Environment
 
-- [1. Requirements](#1-requirements)
-- [2. Prepare](#2-prepare)
-  - [2.1. Clone repository and switch to the cloned repo](#21-repository-clone-and-switch-to-the-cloned-repo)
-  - [2.2. Configure environment variables](#22-configure-environment-variables)
+This repository contains the necessary files to configure, build, and run a Docker container, including `docker-compose.yaml`, `Dockerfile`, and scripts. Some environment variables are stored in a `.env` file, which must be created using the `create-env.sh` script to adopt specific settings from the host system. A base Docker image is automatically downloaded from Docker Hub.
+
+The purpose of this repository is to assist in creating Docker containers that provide the necessary prerequisites for building Neutrino flash images and packages using the Yocto/OE build system.
+
+## Contents
+- [Contents](#contents)
+- [🚀 Quick Start](#-quick-start)
+  - [Build Container](#build-container)
+  - [Login to Container](#login-to-container)
+  - [Initialize Build Environment in Docker Terminal](#initialize-build-environment-in-docker-terminal)
+- [1. Prerequisites](#1-prerequisites)
+- [2. Preparation](#2-preparation)
+  - [2.1 Clone Repository and Change Directory](#21-clone-repository-and-change-directory)
+  - [2.2 Configure Environment Variables](#22-configure-environment-variables)
   - [2.3 Volumes](#23-volumes)
-  - [2.4 Configure Ports](#24-ports-configure)
-    - [2.4.1 Web Access](#241-web access)
+  - [2.4 Configure Ports](#24-configure-ports)
+    - [2.4.1 Web Access](#241-web-access)
     - [2.4.2 SSH](#242-ssh)
-- [3. Build Container](#3-container-build)
+- [3. Build Container](#3-build-container)
   - [3.1 Example 1](#31-example-1)
-  - [3.2 Example 2](#32-example-2)
-- [4. Start container](#4-start-container)
-- [5. stop container](#5-container-stop)
+- [4. Start Container](#4-start-container)
+- [5. Stop Container](#5-stop-container)
 - [6. Using the Container](#6-using-the-container)
-- [6.1. Login](#61-login)
-- [6.2. Use build environment](#62-build-environment-use)
+  - [6.1 Login](#61-login)
+  - [6.2 Using the Build Environment](#62-using-the-build-environment)
 - [7. Update Container](#7-update-container)
-- [8th. Support](#8-support)
+- [8. Support](#8-support)
 
-## 1. Requirements
+## 🚀 Quick Start
 
-  Tested under Linux Debian 11.x, Ubuntu 20.04, 22.04. But it should work on any current distribution that runs Docker.
+If you want to quickly get the container running, execute the following steps in a terminal. This assumes that Docker and Docker Compose are already installed.
 
-  Necessary:
-     
+### Build Container
+
+```bash
+~/docker-buildenv $ git clone https://github.com/tuxbox-neutrino/docker-buildenv.git && cd docker-buildenv
+                  ./docker-compose build
+                  docker-compose up -d
+```
+
+### Login to Container
+
+```bash
+~/docker-buildenv $ docker exec -it --user $USER tuxbox-build bash
+```
+
+### Initialize Build Environment in Docker Terminal
+
+```bash
+user@asjghd76dfwh:~/tuxbox/buildenv$ ./init && cd poky-3.2.4
+...
+Create configurations ...
+...
+Start build
+------------------------------------------------------------------------------------------------
+Now you are ready to build your own images and packages.
+Selectable machines are:
+
+        hd51 ax51 mutant51 bre2ze4k hd60 ax60 hd61 ax61 h7 zgemmah7 osmio4k osmio4kplus e4hdultra
+
+Select your favorite machine (or identical) and the next steps are:
+
+        cd /home/tg/tuxbox/buildenv/poky-3.2.4 && . ./oe-init-build-env build/<machine>
+        bitbake neutrino-image
+
+For more information and next steps, take a look at the README.md!
+user@asjghd76dfwh:~/tuxbox/buildenv/poky-3.2.4$
+```
+
+No further adjustments should be necessary. After these steps, the container runs in the background and provides the Yocto/OE build environment.
+You can now start the build process.
+
+**Note:** Further information on next steps can be found [here](https://github.com/tuxbox-neutrino/buildenv/blob/master/README.md).
+
+## 1. Prerequisites
+
+Tested on Linux Debian 11.x, Ubuntu 20.04, 22.04. It should work on any current distribution where Docker is supported.
+
+Required:
    - Docker, [Installation](https://docs.docker.com/engine/install/debian/#install-using-the-convenience-script)
    - Docker Compose >= v2.24.3, [Installation](https://docs.docker.com/compose/install/standalone/)
-   - Git, installation via the package manager depending on the distribution
-   
-  Optional:
-   
+   - Git, installable via the package manager according to your distribution
+
+Optional:
    - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-   - Portainer, [Installation](https://docs.portainer.io/start/install-ce/server/docker/linux) (available with Docker desktop as a plugin)
+   - Portainer, [Installation](https://docs.portainer.io/start/install-ce/server/docker/linux) (available as a plugin with Docker Desktop)
 
-  **Important!** After you have installed Docker and want to run Docker as a non-root user, which is appropriate for our purposes, you should add yourself as a user to the "docker" group using this command:
+**Important!** After installing Docker, if you want to run Docker as a non-root user, add yourself to the `docker` group:
 
-   ```bash
-   sudo usermod -aG docker $USER
-   ```
-  Then to apply the setting, either log out and log in again or restart!
+```bash
+sudo usermod -aG docker $USER
+```
 
-## 2. Prepare
+Then log out and back in or restart your system for the changes to take effect.
 
-### 2.1. Clone repository and switch to the cloned repo
+## 2. Preparation
 
-   ```bash
-   git clone https://github.com/tuxbox-neutrino/docker-buildenv.git && cd docker-buildenv
-   ```
+### 2.1 Clone Repository and Change Directory
 
-### 2.2. Configure environment variables
+```bash
+git clone https://github.com/tuxbox-neutrino/docker-buildenv.git && cd docker-buildenv
+```
 
-   Run this script to create the necessary `.env` file:
+### 2.2 Configure Environment Variables
 
-   ```bash
-   ./create-env.sh
-   ```
-   
-  The script gets some environment variables from the host system and puts them into an `.env` file so that the container is configured to suit your host system. As a rule, that should be enough. Adjustments are usually not required. However, if this does not cover your requirements, you can adapt this generated `.env` file. However, you should not run the script again, otherwise the `.env` file will be overwritten again. It is therefore advisable to either rename this customized `.env` file and rename it accordingly in the `docker-compose.yml` file, or preferably to use another one in this form as a parameter when running `docker-compose` - -env-file <my .env file>` passed to `docker-compose`.
+If no `.env` file exists, create one using the provided script. This script retrieves environment variables from the host system and integrates them into the `.env` file.
+
+```bash
+./create-env.sh
+```
+
+You can rerun this script if needed.
 
 ### 2.3 Volumes
 
-  The container uses Docker Volumes to store persistent data, which allows access to specific files and directories permanently in the container.
-  In the standard configuration, these volumes are in principle integrated to suit the environment of your host system and mounted when the container is started, so that ideally you do not have to change anything in the volume configuration.
-  If you want to make changes to this, you can find the configuration of the volumes in `docker-compose.yml`. **Note** that these settings are normally aligned with the paths as preconfigured for the Yocto/OE build environment using the init script from the Buildenv repository. If adjustments are made to this, you should take this into account!
-  
-  These paths are mounted as volumes in the container. You have normal access to it via your host:
+The container uses Docker volumes to store persistent data. Default configurations should suffice, but changes can be made in `docker-compose.yml` if necessary.
 
-  ```bash
-  /home
-    └──<$USER>
-        ├── tuxbox
-        │ ├── .config
-        │ ├── .data
-        │ ├── am
-        │ └── buildenv
-        ├── Archives
-        ├── am
-        ├── sources
-        ├── sstate cache
-  ```
+### 2.4 Configure Ports
 
-### 2.4 Configure ports
+#### 2.4.1 Web Access
 
-  The container provides some access via certain network ports. This allows access to the build results via a web browser and access to the container via ssh.
+The container maps port 80 (container) to port 8080 (host) for web access:
 
-#### 2.4.1 Web access
+- Port: 8080 (Host) -> 80 (Container)
 
-  By default, the container is configured to listen on port 80. Your host is mapped to the container's built-in web server (`lighttpd`) via port 8080:
-
-  - Port: 8080 (host) -> 80 (container)
-
-  This enables access via web server to the generated images and packages (ipk's). Set-top boxes can therefore access updates directly from your home network, for example. If port 8080 on your host system is already occupied, you can either adjust these settings in the `docker-compose.yml` file or specify them when starting the container. This could look like this if you map to port 8081:
-
-  - 808**1**:80
-   
-  Settings on the web server can be made in the responsible lighttpd configuration file, which is available in the corresponding volume:
-
-  ```bash
-   ~/tuxbox
-     └──.config
-        └── lighttpd
-            └── lighttpd.conf
-  ```
-  `dir-listing` is activated in `lighttpd.conf`, so that you can get by without additional content.
-  
-  ```bash
-  ~/tuxbox/config/lighttpd$ cat lighttpd.conf
-  ...
-  #server.compat-module-load = "disable"
-  server.modules += (
-        "mod_dirlisting",
-        "mod_staticfile",
-  )
-  dir-listing.activate = "enable"
- ```
- 
 #### 2.4.2 SSH
 
-  Usually you access the container directly via `docker exec`.
-  Since Git is already part of the container, an ssh server is also provided. By default, the ssh server is configured like this:
+The container runs an SSH server with the following default settings:
 
-   - Port: 222 (host) -> 22 (container)
-   - Password: = Username (as set in .env)
+- Port: 222 (Host) -> 22 (Container)
+- Password: = Username (as set in `.env` file)
 
-  If port 222 is already occupied on your host system, you can adjust these settings in the `docker-compose.yml` file, just like with the web server, or specify them when starting the container.
-   
-  Login from the host system itself:
-    
-  ```bash
-  ssh $USER@localhost -p 222
-  ```
-  
-  Log in from another computer:
-    
-  ```bash
-  ssh <user>@<IP or hostname of the computer on which the container is running> -p 222
-  ```
-    
-## 3. Build containers
+## 3. Build Container
 
 ### 3.1 Example 1
- 
-  Run docker-compose wrapper:
 
-   ```bash
-   ./docker-compose build
-   ```
+Run the Docker Compose wrapper script:
 
-   **Note:** The preceding `./` must be taken into account here since the wrapper script is in the repo. The wrapper script calls `docker-compose` as intended, but after automatically creating an `.env` file as described in [Step 2.2](#22-configure-environment-variables)! This wrapper script takes all parameters common to `docker-compose`. It only serves to reduce the effort required to enter commands to create the environment variables, which are provided via the generated `.env` file.
+```bash
+./docker-compose build
+```
 
-### 3.2 Example 2
+## 4. Start Container
 
-  Run docker-compose: with different `.env file`
+```bash
+docker-compose up -d
+```
 
-  **Note:** Hm repository includes an `.env.sample` as an example. However, if desired, this must be adjusted and explicitly passed to `docker-compose` when creating the container.
+## 5. Stop Container
 
-  ```bash
-  docker-compose --env-file <path to other .env file> build
-  ```
+```bash
+docker-compose down
+```
 
-## 4. Start container
+## 6. Using the Container
 
-   ```bash
-   docker-compose up -d
-   ```
+### 6.1 Login
 
-## 5. Stop containers
+To log in, use the container ID or name:
 
-   ```bash
-   docker-compose down
-   ```
+```bash
+docker exec -it --user $USER tuxbox-build bash
+```
 
-## 6. Using the container
+### 6.2 Using the Build Environment
 
-## 6.1. log in
+Once logged in, navigate to `buildenv` and update it if necessary:
 
-   You should know the name or container ID to log in. Run `docker ps` to see which containers are currently available:
+```bash
+git pull -r origin master
+```
 
-   ```bash
-   docker ps
-   CONTAINER ID IMAGE COMMAND CREATED STATUS PORTS NAMES
-   9d6e0d280a9e tuxbox-build:latest "/usr/local/bin/star…" 41 minutes ago Up 41 minutes 0.0.0.0:8080->80/tcp tuxbox-build
-   ```
+Proceed as described in the [README.md](https://github.com/tuxbox-neutrino/buildenv/blob/master/README.md).
 
-   For example, log in to the container with the `Container ID` **9d6e0d280a9e** or the `Container Name` like this:
+## 7. Update Container
 
+To update the repository and rebuild the container:
 
-   ```bash
-   docker exec -it --user $USER tuxbox-build bash
-   ```
-   or:
-
-   ```bash
-   docker exec -it --user $USER <CONTAINER ID> bash
-   ```
-
-   You should see something like this prompt:
-
-   ```bash
-   ~/tuxbox/buildenv$
-   ```
-
-  First you should make sure that the init script is up to date. Therefore, carry out an update:
-
-  ```bash
-  ~/tuxbox/buildenv$ git pull -r origin master
-  ```
-
-  From now on you can use the build environment with the container.
-
-## 6.2. Use build environment
-
-  After logging into the container, you are already in the `buildenv` directory, where the init script is located. Now you can continue as described [here](https://github.com/tuxbox-neutrino/buildenv/blob/master/README.md).
-
-  The images and packages produced by the build system are made available via persistent volumes within your host home directory. By default, this location is intended for this:
-
-  ```bash
-  /home
-   └──<$USER>
-       ├── tuxbox
-       : ├── buildenv
-           : ├── dist
-               :
-   ```
-  **Note:** If you have set up your volumes differently, this may of course differ.
-
-  The container provides a web server and can be accessed locally and on the LAN via port 8080 by default:
-
-   - [http://localhost<:PORT NUMBER>](http://localhost:8080)
-   - [http://127.0.0.1<:PORT NUMBER>](http://127.0.0.1:8080)
-   
-   or on the LAN
-
-   - [http://IP<:PORT NUMBER>](http://192.168.1.36:8080)
-
-
-## 7. Update containers
-
-  As stated in [Step 2.1](#21-clone-repository-and-switch-to-the-cloned-repo), the repository that contains the recipe for the container can be updated regularly.
-  To do this, go to the repository and run this command:
-
- ```bash
-  ~/docker-buildenv$ git pull -r origin master
- ```
-
- Then have the container created as described [here](#3-container-building).
+```bash
+git pull -r origin master
+```
 
 ## 8. Support
 
-  For further questions, problems or support, open an [Issue in GitHub](https://github.com/dbt1/docker-buildenv/issues) or report in the [Forum](https://forum.tuxbox-neutrino.org /forum/viewforum.php?f=77).
+For issues or support, open an [issue on GitHub](https://github.com/dbt1/docker-buildenv/issues) or visit the [forum](https://forum.tuxbox-neutrino.org/forum/viewforum.php?f=77).
+

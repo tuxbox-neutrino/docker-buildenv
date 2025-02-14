@@ -1,10 +1,12 @@
+<!-- LANGUAGE_LINKS_START -->
+<span style="color: grey;">🇩🇪 German</span> | [🇬🇧 English](README-en.md)
+<!-- LANGUAGE_LINKS_END -->
 
-Docker Buildumgebung
+# Docker Buildumgebung
 
-Dieses Repository enthält die notwendigen Dateien, um einen Docker-Container zu konfigurieren, zu erzeugen und zu starten, einschließlich docker-compose.yaml, Dockerfile und Skripte. Einige Umgebungsvariablen werden in eine .env-Datei hinterlegt, die mit dem Skript create-env.sh erzeugt werden muss, um einige Einstellungen vom Host-System zu übernehmen. Ein Basis-Dockerimage, wird dabei automatisch von Docker-Hub geladen.
+Dieses Repository enthält die notwendigen Dateien, um einen Docker-Container zu konfigurieren, zu erzeugen und zu starten, einschließlich `docker-compose.yaml`, `Dockerfile` und Skripte. Einige Umgebungsvariablen werden in eine `.env`-Datei hinterlegt, die mit dem Skript `create-env.sh` erzeugt werden muss, um einige Einstellungen vom Host-System zu übernehmen. Ein Basis-Dockerimage, wird dabei automatisch von Docker-Hub geladen.
 
 Die Verwendung dieses Repositorys soll helfen, Docker-Container zu erzeugen, die die notwendigen Voraussetzungen bereitstellen, um Neutrino Flashimages und Pakete mit dem Yocto/OE-Buildsystem bauen zu können.
-
 
 # Inhalt
 - [Inhalt](#inhalt)
@@ -22,7 +24,6 @@ Die Verwendung dieses Repositorys soll helfen, Docker-Container zu erzeugen, die
     - [2.4.2 SSH](#242-ssh)
 - [3. Container bauen](#3-container-bauen)
   - [3.1 Beispiel 1](#31-beispiel-1)
-  - [3.2 Beispiel 2](#32-beispiel-2)
 - [4. Container starten](#4-container-starten)
 - [5. Container stoppen](#5-container-stoppen)
 - [6. Verwenden des Containers](#6-verwenden-des-containers)
@@ -32,17 +33,15 @@ Die Verwendung dieses Repositorys soll helfen, Docker-Container zu erzeugen, die
 - [8. Unterstützung](#8-unterstützung)
 
 
-
 # 🚀 Schnellstart
 
-Falls du es eilig hast und den Container schnell zum Laufen bringen willst, kannst du die folgenden Schritte in einem Terminal ausführen. Dies setzt voraus, dass Docker und Docker Compose bereits installiert sind.
+Falls du den Container schnell zum Laufen bringen willst, kannst du die folgenden Schritte in einem Terminal ausführen. Dies setzt voraus, dass Docker und Docker Compose bereits installiert sind.
 
 ## Container bauen
 
 ```bash
 ~/docker-buildenv $ git clone https://github.com/tuxbox-neutrino/docker-buildenv.git && cd docker-buildenv
-                  ./create-env.sh
-                  docker-compose build
+                  ./docker-compose build
                   docker-compose up -d
 ```
 
@@ -75,9 +74,10 @@ For more information and next steps take a look at the README.md!
 user@asjghd76dfwh:~/tuxbox/buildenv/poky-3.2.4$ 
 ```
 
-Nach diesen Schritten läuft der Container im Hintergrund und stellt die Yocto/OE-Buildumgebung bereit. Du kannst nun mit dem Buildprozess beginnen.
+Weitere Anpassungen sollte am Container selbst nicht notwendig sein. Nach diesen Schritten läuft der Container im Hintergrund und stellt die Yocto/OE-Buildumgebung bereit.
+Du kannst nun mit dem Buildprozess beginnen.
 
-Hinweis: Weitere Informationen zur eigentlichen Buildumgebung findest du [hier](https://github.com/tuxbox-neutrino/buildenv/blob/master/README.md) Weitere Anpassungen sollte am Container selbst nicht notwendig sein, aber schaue dir die folgenden Informationen weiter an.
+**Hinweis:** Weitere Informationen zum weiteren Vorgehen findest du [hier](https://github.com/tuxbox-neutrino/buildenv/blob/master/README.md) 
 
 # 1. Voraussetzungen
 
@@ -94,12 +94,12 @@ Hinweis: Weitere Informationen zur eigentlichen Buildumgebung findest du [hier](
    - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
    - Portainer, [Installation](https://docs.portainer.io/start/install-ce/server/docker/linux) (mit Docker-Desktop als Plugin verfügbar)
 
-  **Wichtig!** Nachdem Du Docker installiert hast und Docker als nicht Root Benutzer ausführen möchtest, was für unsere Zwecke durchaus angebracht ist, solltest Du dich mit diesem Befehl als Benutzer zur "docker" Gruppe hinzufügen:
+  **Wichtig!** Nachdem Du Docker installiert hast und Docker als nicht Root Benutzer ausführen möchtest, musst Du dich, falls noch nicht geschehen, mit diesem Befehl als Benutzer zur `docker` Gruppe hinzufügen:
 
    ```bash
    sudo usermod -aG docker $USER
    ```
-  Danach zum Übernehmen der Einstellung entweder ausloggen und wieder einloggen oder einen Neustart durchführen!
+  Danach zum Übernehmen dieser Änderung ausloggen und wieder einloggen oder einen Neustart durchführen!
 
 # 2. Vorbereiten
 
@@ -111,19 +111,22 @@ Hinweis: Weitere Informationen zur eigentlichen Buildumgebung findest du [hier](
 
 ## 2.2. Umgebungsvariablen konfigurieren
 
-   Führe dieses Script aus, um die notwendige `.env`-Datei zu erzeugen:
+   Ist noch keine .env Datei vorhanden, muss zumindest einmal diese Datei erzeugt werden.
+
+   Dazu führe dieses Script aus. Du wirst dabei abgerfragt, welche Umgebungsvariablen gesetzt werden sollen. Anpassungen sind normalerweise nicht erforderlich, weil das Script einige Umgebungsvariablen vom Host-System holt und diese in eine `.env`-Datei einbaut:
 
    ```bash
    ./create-env.sh
    ```
-   
-  Das Script holt einige Umgebungsvariablen vom Host-System und passt, bzw. baut, diese in eine `.env`-Datei ein, damit der Container passend zu deinem Host-System konfiguriert wird. In der Regel sollte das schon reichen. Anpassungen sind normalerweise nicht erforderlich. Sollten damit deine Anforderungen aber noch nicht abgedeckt sein, kannst Du diese erzeugte `.env`-Datei anpassen. Das Script solltest Du dann aber nicht noch einnmal ausführen, da die `.env`-Datei sonst wieder überschrieben wird. Es ist daher ratsam, etweder diese angepasste `.env`-Datei umzubenennen und entsprechend ebenfalls in der `docker-compose.yml`-Datei umbenennen, oder bevorzugt beim ausführen von `docker-compose` als Parameter eine andere in dieser Form `--env-file <meine .env-Datei>` an `docker-compose` übegeben.
+  
+  Führst du dieses Script weitere Male aus, kannst du entscheiden ob du es ausführen willst, oder die es dabei belässt.
 
 ## 2.3 Volumes
 
   Der Container verwendet Docker Volumes, um persistente Daten zu speichern, welche Zugriff auf spezifische Dateien und Verzeichnisse dauerhaft im Container ermöglichen.
   In der Standardkonfiguration werden prinzipiell diese Volumes passend zur Umgebung deines Host-Systems eingebunden und beim Starten des Containers eingehängt, so dass Du im Idealfall an der Volumes-Konfiguration nichts ändern musst.
-  Solltest Du daran Änderungen vornehmen wollen, findest Du in der `docker-compose.yml` die Konfiguration der Volumes. **Beachte** aber dass diese Einstellungem normalerweise mit den Pfaden wie sie für die Yocto/OE Buildumgebung mit dem init-Script aus dem Buildenv-Repository vorkonfiguriert werden, abgestimmt sind. Sollten daran Anpassungen vorgenommen werden, solltest Du das berücksichtigen!
+  Solltest Du daran Änderungen vornehmen wollen, findest Du in der `docker-compose.yml` die Konfiguration der Volumes. 
+  **Beachte** aber dass diese Einstellungem normalerweise mit den Pfaden wie sie für die Yocto/OE Buildumgebung mit dem init-Script aus dem Buildenv-Repository vorkonfiguriert werden, abgestimmt sind. Sollten daran Anpassungen vorgenommen werden, solltest Du das berücksichtigen!
   
   Diese Pfade werden als Volumes im Container bereitgestellt. Du hast über dein Host darauf normalen Zugriff:
 
@@ -151,7 +154,8 @@ Hinweis: Weitere Informationen zur eigentlichen Buildumgebung findest du [hier](
 
   - Port: 8080 (Host) -> 80 (Container)
 
-  Dies ermöglicht den Zugriff via Webserver auf die erzeugten Images und Pakete (ipk's). Set-Top Boxen können damit direkt Updates beispielsweise aus deinem Heimnetz abrufen. Falls der Port 8080 des Hostsystems bei Dir bereits belegt ist, kannst Du diese Einstellungen entweder in der `docker-compose.yml` Datei anpassen oder beim Starten des Containers angeben. Dies könnte so aussehen, wenn man auf den Port 8081 mappt:
+  Dies ermöglicht den Zugriff via Webserver auf die erzeugten Images und Pakete (ipk's). Set-Top Boxen können damit direkt Updates beispielsweise aus deinem Heimnetz abrufen.
+  Falls der Port 8080 des Hostsystems bei Dir bereits belegt ist, kannst Du diese Einstellungen entweder in der `docker-compose.yml` Datei anpassen oder beim Starten des Containers angeben. Dies könnte so aussehen, wenn man auf den Port 8081 mappt:
 
   - 808**1**:80
    
@@ -179,7 +183,7 @@ Hinweis: Weitere Informationen zur eigentlichen Buildumgebung findest du [hier](
 ### 2.4.2 SSH
 
   Üblicherweise greift man auf den Container direkt über `docker exec` zu.
-  Da Git ohnehin Bestandteil im Container ist, wird auch ein ssh-Server zur Verfügung gestellt. Der ssh-Server ist standardmäßig so konfiguriert:
+  Der Container stellt auch einen ssh-Server zur Verfügung. Der ssh-Server ist standardmäßig so konfiguriert:
 
    - Port: 222 (Host) -> 22 (Container)
    - Passwort: = Benutzername (wie in .env festgelegt)
@@ -208,17 +212,7 @@ Hinweis: Weitere Informationen zur eigentlichen Buildumgebung findest du [hier](
    ./docker-compose build
    ```
 
-   **Hinweis:** Das vorangestellte `./` ist hier zu berücksichtigen, da sich das Wrapperscript im Repo befindet. Das Wrapper-Script ruft `docker-compose` wie vorgesehen auf, allerdings nachdem automatisch eine `.env`-Datei, wie in  [Schritt 2.2](#22-umgebungsvariablen-konfigurieren) beschrieben ist, erzeugt wurde! Dieses Wrapperscript nimmt alle Parameter an, die für `docker-compose` üblich sind. Es dient lediglich dazu, den Aufwand für die Befehlseingabe zur Erzeugung der Umgebungsvariablen, welche über die generierte `.env`-Datei bereitgestellt werden, zu verringern. 
-
-## 3.2 Beispiel 2
-
-  Docker-compose ausführen: mit anderer `.env-Datei`
-
-  **Hinweis:** Hm Repository ist eine `.env.sample` als Beispiel enthalten. Falls gewünscht, muss diese allerdings angepasst und explizit beim Erzeugen des Containers an `docker-compose` übergeben werden.
-
-  ```bash
-  docker-compose --env-file <Pfad zu anderer .env-Datei> build
-  ```
+   **Hinweis:** Das vorangestellte `./` ist hier zu berücksichtigen, da es sich um ein Wrapperscript handelt. Das Wrapper-Script ruft `docker-compose` wie vorgesehen auf, allerdings nachdem automatisch eine `.env`-Datei, wie in  [Schritt 2.2](#22-umgebungsvariablen-konfigurieren) beschrieben ist, erzeugt wurde! Dieses Wrapperscript nimmt alle Parameter an, die für `docker-compose` üblich sind. Es dient lediglich dazu, den Aufwand für die Befehlseingabe zur Erzeugung der Umgebungsvariablen, welche über die generierte `.env`-Datei bereitgestellt werden, zu verringern. 
 
 # 4. Container starten
 
@@ -262,7 +256,7 @@ Hinweis: Weitere Informationen zur eigentlichen Buildumgebung findest du [hier](
    ~/tuxbox/buildenv$
    ```
 
-  Zuerst solltest Du sicherstellen, dass das Init-Script aktuell ist. Führe deshalb eine Aktualisierung durch:
+  Zuerst solltest Du sicherstellen, dass `buildenv` aktuell ist. Wenn das Dockerimage frisch gebaut wurde, sollte das schon erledigt sein, ansonsten führe deshalb eine Aktualisierung durch:
 
   ```bash
   ~/tuxbox/buildenv$ git pull -r origin master
@@ -305,7 +299,7 @@ Hinweis: Weitere Informationen zur eigentlichen Buildumgebung findest du [hier](
   ~/docker-buildenv$ git pull -r origin master
  ```
 
- Anschließend wie [hier](#3-container-bauen) beschrieben, den Container erstellen lassen.
+ Anschließend wie [hier](#3-container-bauen) beschrieben, den Container neu erstellen lassen.
 
 # 8. Unterstützung
 
