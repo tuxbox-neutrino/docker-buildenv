@@ -29,26 +29,34 @@ chown -R "$USER":"$GROUP_NAME" "${XDG_CONFIG_HOME}/git"
 # Prepare SSH configuration
 mkdir -p "${USER_DIR}/.ssh"
 
-# Optimize chown: Only change ownership if incorrect
-for dir in "$USER_VOLUME_WORKDIR" "$WWW_DOCDIR"; do
-    if [ -d "$dir" ]; then
-        current_owner=$(stat -c "%U:%G" "$dir")
-        if [ "$current_owner" != "$USER:$GROUP_NAME" ]; then
-            echo "Updating ownership for $dir..."
-            chown -R "$USER":"$GROUP_NAME" "$dir"
+# Bulk chown/chmod only on first init (or when explicitly forced).
+# Recursive operations over the workdir become unusable on large Yocto
+# trees (multiple GB / millions of files) and would block the healthcheck.
+INIT_MARKER="${USER_VOLUME_WORKDIR}/.init_done"
+if [ ! -f "$INIT_MARKER" ] || [ "${FORCE_INIT_FIXUP:-false}" = "true" ]; then
+    # Optimize chown: Only change ownership if incorrect
+    for dir in "$USER_VOLUME_WORKDIR" "$WWW_DOCDIR"; do
+        if [ -d "$dir" ]; then
+            current_owner=$(stat -c "%U:%G" "$dir")
+            if [ "$current_owner" != "$USER:$GROUP_NAME" ]; then
+                echo "Updating ownership for $dir..."
+                chown -R "$USER":"$GROUP_NAME" "$dir"
+            fi
         fi
-    fi
-done
+    done
 
-# Optimize chmod: Only change permissions if incorrect
-for dir in "$USER_VOLUME_WORKDIR" "$WWW_DOCDIR"; do
-    if [ -d "$dir" ]; then
-        if find "$dir" -not -perm -g+rw | grep . > /dev/null 2>&1; then
-            echo "Updating permissions for $dir..."
-            chmod -R g+rw "$dir"
+    # Optimize chmod: Only change permissions if incorrect
+    for dir in "$USER_VOLUME_WORKDIR" "$WWW_DOCDIR"; do
+        if [ -d "$dir" ]; then
+            if find "$dir" -not -perm -g+rw | grep . > /dev/null 2>&1; then
+                echo "Updating permissions for $dir..."
+                chmod -R g+rw "$dir"
+            fi
         fi
-    fi
-done
+    done
+else
+    echo "Skipping bulk chown/chmod (marker $INIT_MARKER present). Set FORCE_INIT_FIXUP=true to re-run."
+fi
 
 echo "User $USER is set up with group $GROUP_NAME and www-data for shared access."
 
@@ -110,6 +118,9 @@ sed -i "s|@BUILDENV_VERSION@|${BUILDENV_DISTRO_VERSION}|g" "$BASH_RC_FILE"
 sed -i "s|@DOCKER_BUILDENV_GIT_URL@|${DOCKER_BUILDENV_GIT_URL}|g" "$BASH_RC_FILE"
 sed -i "s|@LOCAL_HOSTNAME@|${LOCAL_HOSTNAME}|g" "$BASH_RC_FILE"
 chown "$USER":"$GROUP_NAME" "$BASH_RC_FILE"
+
+# Persist init marker so the bulk chown/chmod is skipped on later starts
+touch "$INIT_MARKER" && chown "$USER":"$GROUP_NAME" "$INIT_MARKER"
 
 # Mark container as ready
 touch /tmp/container_ready

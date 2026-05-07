@@ -24,5 +24,7 @@ else
     exit 1
 fi
 
-# Execute docker-compose with all parameters and subcommands
-docker-compose "$@"
+# Execute docker compose with all parameters and subcommands.
+# Use the v2 plugin form to avoid recursing into the local
+# `docker-compose -> docker-compose-wrapper` symlink.
+docker compose "$@"

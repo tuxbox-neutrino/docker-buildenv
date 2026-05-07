@@ -40,15 +40,15 @@ Falls du den Container schnell zum Laufen bringen willst, kannst du die folgende
 ## Container bauen
 
 ```bash
-~git clone https://github.com/tuxbox-neutrino/docker-buildenv.git && cd docker-buildenv
-                  ./docker-compose build
-                  docker-compose up -d
+git clone https://github.com/tuxbox-neutrino/docker-buildenv.git && cd docker-buildenv
+./docker-compose build
+./docker-compose up -d
 ```
 
 ## Auf Container einloggen
 
 ```bash
-~/docker exec -it --user $USER tuxbox-build bash
+docker exec -it --user $USER tuxbox-build bash
 ```
 
 ## Buildumgebung im Docker-Terminal initialisieren
